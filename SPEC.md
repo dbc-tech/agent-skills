@@ -45,10 +45,10 @@ This spec closes that loop:
 Two distinct prefixes disambiguate **PRs for the spec itself** from **Issues for the build
 that implements it**:
 
-| Artefact | Prefix | Raised by | Example |
-|---|---|---|---|
-| **Spec PR** (the spec/plan/tasks themselves) | `[SPEC]` | `/spec-pr` | `[SPEC] widget-7-new-feature` |
-| **Build Issue** (tracks the implementation) | `[BUILD]` | `/issue-create` | `[BUILD] widget-7-new-feature` |
+| Artefact | Prefix | Label | Raised by | Example |
+|---|---|---|---|---|
+| **Spec PR** (the spec/plan/tasks themselves) | `[SPEC]` | `spec` | `/spec-pr` | `[SPEC] widget-7-new-feature` |
+| **Build Issue** (tracks the implementation) | `[BUILD]` | `build` | `/issue-create` | `[BUILD] widget-7-new-feature` |
 
 Both use the same kebab-cased `<name>` derived from the `# Spec:` heading, so a spec and
 its corresponding build issue are linked by shared `<name>`. The prefix is the only
@@ -77,7 +77,8 @@ difference.
    has prepared). It does not auto-close the issue — merging is a human action.
 5. `spec-pr` raises a pull request for the **spec/plan/tasks themselves** (not the
    implementation). The PR title is `[SPEC] <name>` where `<name>` is the kebab-cased
-   text after `# Spec:`. The PR body references the spec, plan, and todo files.
+   text after `# Spec:`. The PR body references the spec, plan, and todo files. The PR is
+   labelled `spec` (created if it does not yet exist on the repo).
 6. The `/spec` and `/plan` commands write to `specs/<feature>/SPEC.md`,
    `specs/<feature>/tasks/plan.md`, `specs/<feature>/tasks/todo.md` (NOT the repo root).
 7. `validate-commands.js` passes after new commands are added in all three command dirs
@@ -288,7 +289,8 @@ description: "Raise a PR for the spec/plan/tasks themselves using [SPEC] naming 
 Invoke the agent-skills:spec-pr skill.
 
 Read the spec at `specs/<feature>/SPEC.md`, kebab-case the text after `# Spec:` to derive
-`<name>`, and open a pull request with `gh pr create --title "[SPEC] <name>" --body-file <body>`
+`<name>`, ensure the `spec` label exists (`gh label create spec --force`), and open a pull
+request with `gh pr create --title "[SPEC] <name>" --label spec --body-file <body>`
 where the body references the spec, plan, and todo files.
 ```
 
@@ -516,6 +518,8 @@ skill has its required eval case file." That bar is non-negotiable for merge.
   **`[SPEC]`** prefix for spec PRs (`spec-pr`). Never mix the two.
 - Ensure the `build` label exists on the repo before the labelled issue is created
   (`gh label create build --force` — `--force` makes it idempotent).
+- Ensure the `spec` label exists on the repo before the labelled spec PR is created
+  (`gh label create spec --force` — `--force` makes it idempotent).
 - Raise an implementation PR via `issue-pr` whose body references the build issue
   (`Resolves #<n>` or `Implements #<n>`) so GitHub links the PR to the issue.
 - List **both** `AGENTS.md` and `CLAUDE.md` whenever referencing the agent-rules file;
@@ -583,7 +587,8 @@ skill has its required eval case file." That bar is non-negotiable for merge.
   links the PR to the issue. The issue is not auto-closed by this command.
 - [ ] `spec-pr` reads `specs/<feature>/SPEC.md`, kebab-cases the text after `# Spec:` to
   derive `<name>`, and opens a PR titled `[SPEC] <name>` whose body references the
-  spec/plan/todo files. The PR is not auto-merged.
+  spec/plan/todo files. The PR is labelled `spec` (creating the label if absent). The PR
+  is not auto-merged.
 - [ ] `/spec` writes to `specs/<feature>/SPEC.md`; `/plan` writes to
   `specs/<feature>/tasks/plan.md` and `specs/<feature>/tasks/todo.md`. Repo-root paths are
   deprecated.
@@ -615,6 +620,9 @@ skill has its required eval case file." That bar is non-negotiable for merge.
    calls `gh label create build --force` (idempotent — creates the label if absent, updates
    description/color if already present) before opening the labelled issue. The `[BUILD] `
    title prefix is retained as a secondary signal so `issue-list` can filter on title.
+   **Spec PRs** (`spec-pr`) use a `spec` label, created the same way
+   (`gh label create spec --force`), so spec PRs and build issues are distinguishable by
+   label as well as by prefix.
 
 2. **Auto-close the issue when `/build` finishes?** — **Resolved:** No auto-close on build.
    Instead, add `/issue-pr <n>` which raises a pull request whose body references the
