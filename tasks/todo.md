@@ -105,7 +105,7 @@
   - Files: `scripts/update-opencode.sh`, `scripts/update-opencode-test.sh`
   - Dependencies: Task 10 (the updater assumes a prior install; reuses the marker convention)
 
-- [ ] Task 12: Update `docs/opencode-setup.md` with install + update script instructions
+- [x] Task 12: Update `docs/opencode-setup.md` with install + update script instructions
   - Acceptance: `docs/opencode-setup.md` has a new "Installation" section documenting: prerequisites (`git`); running `scripts/install-opencode.sh [target-dir]`; what it creates (`.opencode/skills` symlink, `AGENTS.md` with marker); running `scripts/update-opencode.sh [target-dir]`; what the updater does (`git pull`, re-symlink, refresh marker-tagged `AGENTS.md`); the marker behaviour (installer-managed `AGENTS.md` is refreshed; hand-edited is never overwritten); and that the updater fails loudly if `AGENTS.md` is absent. Existing "How It Works" and "Usage Examples" sections are preserved.
   - Verify: Manual read — new section is accurate, prerequisites listed, marker behaviour explained.
   - Files: `docs/opencode-setup.md`
