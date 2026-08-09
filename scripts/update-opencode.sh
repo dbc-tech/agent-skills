@@ -50,4 +50,4 @@ fi
 # 4. Verify.
 [ -L "${SKILLS_DIR}" ] || { echo "ERROR: ${SKILLS_DIR} not a symlink after update" >&2; exit 1; }
 
-echo "Done. Skills at ${SKILLS_DIR}" >&2
+echo "Done. Skills at ${SKILLS_DIR}"

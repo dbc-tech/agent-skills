@@ -22,17 +22,17 @@ Feed agents the right information at the right time. Context is the single bigge
 Structure context from most persistent to most transient:
 
 ```
-┌─────────────────────────────────────┐
-│  1. Rules Files (AGENTS.md, etc.)  │ ← Always loaded, project-wide
-├─────────────────────────────────────┤
-│  2. Spec / Architecture Docs        │ ← Loaded per feature/session
-├─────────────────────────────────────┤
-│  3. Relevant Source Files            │ ← Loaded per task
-├─────────────────────────────────────┤
-│  4. Error Output / Test Results      │ ← Loaded per iteration
-├─────────────────────────────────────┤
-│  5. Conversation History             │ ← Accumulates, compacts
-└─────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  1. Rules Files (AGENTS.md, etc.)      │ ← Always loaded, project-wide
+├─────────────────────────────────────────┤
+│  2. Spec / Architecture Docs            │ ← Loaded per feature/session
+├─────────────────────────────────────────┤
+│  3. Relevant Source Files                │ ← Loaded per task
+├─────────────────────────────────────────┤
+│  4. Error Output / Test Results          │ ← Loaded per iteration
+├─────────────────────────────────────────┤
+│  5. Conversation History                 │ ← Accumulates, compacts
+└─────────────────────────────────────────┘
 ```
 
 ### Level 1: Rules Files

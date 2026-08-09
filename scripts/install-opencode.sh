@@ -46,4 +46,4 @@ fi
 [ -d "${REPO_SKILLS}" ] || { echo "ERROR: skills/ not found at ${REPO_SKILLS}" >&2; exit 1; }
 [ -L "${SKILLS_DIR}" ]  || { echo "ERROR: ${SKILLS_DIR} not a symlink" >&2; exit 1; }
 
-echo "Done. Skills available at ${SKILLS_DIR}" >&2
+echo "Done. Skills available at ${SKILLS_DIR}"
