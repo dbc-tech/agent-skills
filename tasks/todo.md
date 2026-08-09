@@ -14,7 +14,7 @@
   - Files: `commands/planning.toml`, `.claude/commands/plan.md`, `.gemini/commands/planning.toml`
   - Dependencies: None
 
-- [ ] Task 3: Update `spec-driven-development`, `planning-and-task-breakdown`, and `incremental-implementation` skills to reference the new paths and enforce task-marking
+- [x] Task 3: Update `spec-driven-development`, `planning-and-task-breakdown`, and `incremental-implementation` skills to reference the new paths and enforce task-marking
   - Acceptance:
     - `skills/spec-driven-development/SKILL.md`: Phase 1 ("Specify") and Phase 2 ("Plan") output-path references point to `specs/<feature>/`. The verification checklist references the new path.
     - `skills/planning-and-task-breakdown/SKILL.md`: "Output Files" section points to `specs/<feature>/tasks/plan.md` and `specs/<feature>/tasks/todo.md`.
