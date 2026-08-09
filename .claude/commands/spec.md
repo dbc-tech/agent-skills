@@ -12,4 +12,4 @@ Begin by understanding what the user wants to build. Ask clarifying questions ab
 
 Then generate a structured spec covering all six core areas: objective, commands, project structure, code style, testing strategy, and boundaries.
 
-Save the spec as SPEC.md in the project root and confirm with the user before proceeding.
+Save the spec as `specs/<feature>/SPEC.md` where `<feature>` is the spec title kebab-cased (e.g. `# Spec: Widget 7` → `specs/widget-7/SPEC.md`). Confirm with the user before proceeding.

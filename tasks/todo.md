@@ -2,7 +2,7 @@
 
 ## Phase 1: Foundation — specs/<feature>/ path convention + task-marking
 
-- [ ] Task 1: Update `/spec` command to write `specs/<feature>/SPEC.md`
+- [x] Task 1: Update `/spec` command to write `specs/<feature>/SPEC.md`
   - Acceptance: `commands/spec.toml`, `.claude/commands/spec.md`, and `.gemini/commands/spec.toml` all instruct the agent to save the spec to `specs/<feature>/SPEC.md` (derived by kebab-casing the text after `# Spec:`), not the repo root.
   - Verify: `node scripts/validate-commands.js` exits 0 (descriptions unchanged, still in parity); manual read of each file confirms the new path.
   - Files: `commands/spec.toml`, `.claude/commands/spec.md`, `.gemini/commands/spec.toml`
