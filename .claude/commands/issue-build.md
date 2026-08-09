@@ -1,0 +1,39 @@
+---
+description: "Build from a GitHub Issue — resolve spec/plan/todo from the issue, then chain /build"
+---
+
+Invoke the agent-skills:incremental-implementation skill alongside agent-skills:test-driven-development.
+
+`$ARGUMENTS` is the issue number (e.g. `/issue-build 42`). If no argument is provided, stop and ask the user for the issue number.
+
+## Step 1: Fetch the issue
+
+Run `gh issue view <n> --json title,body` to fetch the issue's title and body.
+
+If `gh` is not on `PATH`, stop and tell the user — this command requires the GitHub CLI.
+
+## Step 2: Resolve the spec/plan/todo from the issue
+
+**Primary: parse the issue body for links.** Look for markdown links to:
+- `specs/<feature>/SPEC.md`
+- `specs/<feature>/tasks/plan.md`
+- `specs/<feature>/tasks/todo.md`
+
+Extract `<feature>` from the first matching link.
+
+**Fallback: derive from the issue title.** If the body contains no spec links, derive `<feature>` from the issue title. The title should be `[BUILD] <name>` — strip the `[BUILD] ` prefix and use the remaining `<name>` (already kebab-cased by `issue-create`) as `<feature>`. Look under `specs/<name>/`.
+
+If neither method resolves a spec, stop and tell the user — the issue does not reference a spec.
+
+## Step 3: Chain the /build flow
+
+With the resolved spec/plan/todo paths, follow the `/build` command flow:
+
+1. Require a spec at `specs/<feature>/SPEC.md` (or `specs/**/SPEC.md`)
+2. Establish a clean baseline (`git status --porcelain`)
+3. If no plan exists at `specs/<feature>/tasks/plan.md`, invoke agent-skills:planning-and-task-breakdown to generate one
+4. Execute tasks in dependency order (RED → GREEN → regression → build → commit). Each commit must include the task-status update: edit the task's `- [ ]` checkbox to `- [x]` in `specs/<feature>/tasks/todo.md`, stage that file alongside the code, and commit them together
+5. Stop and ask the user when a test fails, the build breaks, the spec is ambiguous, or a task is high-risk
+6. Summarize at the end: tasks completed, tests added, commits made
+
+This command delegates to `incremental-implementation` and `test-driven-development` skills — it has no skill of its own.

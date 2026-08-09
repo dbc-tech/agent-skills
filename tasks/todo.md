@@ -69,7 +69,7 @@
   - Files: `skills/issue-list/SKILL.md`, `.claude/commands/issue-list.md`, `commands/issue-list.toml`, `.gemini/commands/issue-list.toml`, `evals/cases/issue-list.json`, `scripts/issue-list-test.sh`
   - Dependencies: Task 6 (the `[BUILD] ` convention is defined by `issue-create`)
 
-- [ ] Task 8: Create 3 `issue-build` command files (NO skill)
+- [x] Task 8: Create 3 `issue-build` command files (NO skill)
   - Acceptance: `.claude/commands/issue-build.md`, `commands/issue-build.toml`, and `.gemini/commands/issue-build.toml` exist with byte-identical `description`. Each command prompt documents: accepting an issue number argument (`$ARGUMENTS` in Claude Code), running `gh issue view <n>` to fetch the issue body and title, parsing the body for markdown links to `specs/<feature>/SPEC.md` / `specs/<feature>/tasks/plan.md` / `specs/<feature>/tasks/todo.md`, falling back to deriving `<feature>` from the `[BUILD] <name>` issue title and looking under `specs/<name>/`, then chaining the existing `/build` flow against the resolved spec/plan/todo. No `skills/issue-build/SKILL.md` is created. The command explicitly states it delegates to `incremental-implementation` and `test-driven-development` skills.
   - Verify: `node scripts/validate-commands.js` exits 0 (new command in all three dirs, descriptions byte-identical); manual read confirms the link-parsing and `[BUILD] <name>` title-fallback logic is documented.
   - Files: `.claude/commands/issue-build.md`, `commands/issue-build.toml`, `.gemini/commands/issue-build.toml`
