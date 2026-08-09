@@ -537,11 +537,12 @@ skill has its required eval case file." That bar is non-negotiable for merge.
 
 ### Ask first
 
-- Changing the `[BUILD] ` / `[SPEC] ` title prefixes, the `build` label name, or the
-  `specs/<feature>/` directory layout (downstream consumers will have open issues/PRs using
-  the current convention).
+- Changing the `[BUILD] ` / `[SPEC] ` title prefixes, the `build` / `spec` label names, or
+  the `specs/<feature>/` directory layout (downstream consumers will have open issues/PRs
+  using the current convention).
 - Adding a new dependency (none expected; `gh` is the only new prerequisite, and only for
-  the five issue-*/spec-pr commands).
+  the five new `gh`-dependent commands (`spec-pr`, `issue-create`, `issue-list`,
+  `issue-build`, `issue-pr`)).
 - Editing `plugin.json` version or `marketplace.json` (also covered by
   `validate-versions.js`).
 - Changing the install script's behaviour to overwrite an existing `AGENTS.md` (currently

@@ -15,7 +15,10 @@
   - Dependencies: None
 
 - [ ] Task 3: Update `spec-driven-development`, `planning-and-task-breakdown`, and `incremental-implementation` skills to reference the new paths and enforce task-marking
-  - Acceptance: `skills/spec-driven-development/SKILL.md` Phase 1 ("Specify") and Phase 2 ("Plan") output-path references point to `specs/<feature>/`. The verification checklist references the new path. `skills/planning-and-task-breakdown/SKILL.md` "Output Files" section points to `specs/<feature>/tasks/plan.md` and `specs/<feature>/tasks/todo.md`. `skills/incremental-implementation/SKILL.md` Increment Checklist gains an explicit step naming the todo file edit (`- [ ]` → `- [x]`), the plan status update (if the plan tracks status), and the requirement to stage both in the **same commit** as the code — never a separate post-commit step.
+  - Acceptance:
+    - `skills/spec-driven-development/SKILL.md`: Phase 1 ("Specify") and Phase 2 ("Plan") output-path references point to `specs/<feature>/`. The verification checklist references the new path.
+    - `skills/planning-and-task-breakdown/SKILL.md`: "Output Files" section points to `specs/<feature>/tasks/plan.md` and `specs/<feature>/tasks/todo.md`.
+    - `skills/incremental-implementation/SKILL.md`: Increment Checklist gains an explicit step naming the todo file edit (`- [ ]` → `- [x]`), the plan status update (if the plan tracks status), and the requirement to stage both in the **same commit** as the code — never a separate post-commit step.
   - Verify: `node scripts/validate-skills.js` exits 0; `node scripts/validate-reference-links.js` exits 0 (no broken cross-skill links introduced). Manual read of `incremental-implementation` Increment Checklist confirms the checkbox-edit step is present and concrete.
   - Files: `skills/spec-driven-development/SKILL.md`, `skills/planning-and-task-breakdown/SKILL.md`, `skills/incremental-implementation/SKILL.md`
   - Dependencies: None
