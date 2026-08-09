@@ -75,7 +75,7 @@
   - Files: `.claude/commands/issue-build.md`, `commands/issue-build.toml`, `.gemini/commands/issue-build.toml`
   - Dependencies: Task 4 (`/build` must recognise `specs/**/SPEC.md`), Task 6 (the `[BUILD] ` convention)
 
-- [ ] Task 9: Create `skills/issue-pr/SKILL.md` + 3 command files + `evals/cases/issue-pr.json`
+- [x] Task 9: Create `skills/issue-pr/SKILL.md` + 3 command files + `evals/cases/issue-pr.json`
   - Acceptance: `skills/issue-pr/SKILL.md` exists with valid frontmatter. The skill body documents: accepting an issue number, running `gh issue view <n>` to fetch the issue title and body, composing a PR body that references the issue with `Resolves #<n>` (so GitHub links the PR to the issue) and summarises the work done against the spec/plan/todo, determining the current branch (and base branch as the repo's default), running `gh pr create --title <title> --body-file <body> --base <default-branch>`, and reporting the PR URL back. The skill explicitly states it does not merge the PR or close the issue. Three command files exist with byte-identical `description`. `evals/cases/issue-pr.json` exists with ≥3 positive + ≥2 negative (with `owner`) + 1 behavioural (`kind: "dialogue"`). Behavioural eval includes a scenario where `gh` is absent from `PATH` and the skill reports the missing prerequisite.
   - Verify: `node scripts/validate-skills.js` exits 0; `node scripts/validate-commands.js` exits 0; `node scripts/run-evals.js` exits 0; `node scripts/validate-reference-links.js` exits 0.
   - Files: `skills/issue-pr/SKILL.md`, `.claude/commands/issue-pr.md`, `commands/issue-pr.toml`, `.gemini/commands/issue-pr.toml`, `evals/cases/issue-pr.json`
