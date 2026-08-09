@@ -8,7 +8,7 @@
   - Files: `commands/spec.toml`, `.claude/commands/spec.md`, `.gemini/commands/spec.toml`
   - Dependencies: None
 
-- [ ] Task 2: Update `/plan` command to write `specs/<feature>/tasks/plan.md` and `specs/<feature>/tasks/todo.md`
+- [x] Task 2: Update `/plan` command to write `specs/<feature>/tasks/plan.md` and `specs/<feature>/tasks/todo.md`
   - Acceptance: `commands/planning.toml`, `.claude/commands/plan.md`, and `.gemini/commands/planning.toml` all instruct the agent to save the plan and todo under `specs/<feature>/tasks/`, not the repo-root `tasks/`.
   - Verify: `node scripts/validate-commands.js` exits 0; manual read of each file confirms the new paths.
   - Files: `commands/planning.toml`, `.claude/commands/plan.md`, `.gemini/commands/planning.toml`
