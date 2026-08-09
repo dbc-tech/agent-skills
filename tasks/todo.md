@@ -63,7 +63,7 @@
 
 ## Phase 3: Remaining issue-* commands
 
-- [ ] Task 7: Create `skills/issue-list/SKILL.md` + 3 command files + `evals/cases/issue-list.json` + `scripts/issue-list-test.sh`
+- [x] Task 7: Create `skills/issue-list/SKILL.md` + 3 command files + `evals/cases/issue-list.json` + `scripts/issue-list-test.sh`
   - Acceptance: `skills/issue-list/SKILL.md` exists with valid frontmatter. The skill body documents: running `gh issue list --state open --json number,title,url` (or equivalent), filtering client-side to issues whose `title` starts with literal `[BUILD] `, and presenting number/title/url. Three command files exist with byte-identical `description`. `evals/cases/issue-list.json` exists with ≥3 positive + ≥2 negative (with `owner`) + 1 behavioural (`kind: "dialogue"`). `scripts/issue-list-test.sh` asserts that a mock `gh issue list --json title` output containing `[BUILD] foo`, `[BUILD] bar`, `bug: baz`, `[BUILD]` (no trailing space), and `[SPEC] qux` returns only `[BUILD] foo` and `[BUILD] bar`.
   - Verify: `node scripts/validate-skills.js` exits 0; `node scripts/validate-commands.js` exits 0; `node scripts/run-evals.js` exits 0; `bash scripts/issue-list-test.sh` prints `issue-list filter OK` and exits 0.
   - Files: `skills/issue-list/SKILL.md`, `.claude/commands/issue-list.md`, `commands/issue-list.toml`, `.gemini/commands/issue-list.toml`, `evals/cases/issue-list.json`, `scripts/issue-list-test.sh`

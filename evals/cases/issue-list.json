@@ -1,0 +1,43 @@
+{
+  "skill_name": "issue-list",
+  "trigger": {
+    "positive": [
+      {
+        "prompt": "List the open build issues for our specs",
+        "top_k": 3
+      },
+      {
+        "prompt": "Show me which specs are waiting to be built",
+        "top_k": 3
+      },
+      {
+        "prompt": "What build issues are open in GitHub",
+        "top_k": 3
+      }
+    ],
+    "negative": [
+      {
+        "prompt": "Create a new build issue for this spec",
+        "owner": "issue-create"
+      },
+      {
+        "prompt": "Raise a pull request to merge the specification document",
+        "owner": "spec-pr"
+      }
+    ]
+  },
+  "evals": [
+    {
+      "id": 1,
+      "kind": "dialogue",
+      "prompt": "List the open [BUILD] issues so I can see what specs are waiting to be built.",
+      "expected_output": "A filtered list of open issues whose title starts with [BUILD] , showing number, title, and URL",
+      "expectations": [
+        "Only issues with titles starting with [BUILD] (including trailing space) are listed",
+        "Issues with [SPEC] prefix are excluded",
+        "Closed issues are excluded",
+        "The output includes issue number, title, and URL"
+      ]
+    }
+  ]
+}
