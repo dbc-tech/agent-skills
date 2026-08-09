@@ -99,7 +99,7 @@
   - Files: `scripts/install-opencode.sh`, `scripts/install-opencode-test.sh`
   - Dependencies: None (parallel track)
 
-- [ ] Task 11: Create `scripts/update-opencode.sh` + `scripts/update-opencode-test.sh`
+- [x] Task 11: Create `scripts/update-opencode.sh` + `scripts/update-opencode-test.sh`
   - Acceptance: `scripts/update-opencode.sh` exists, is executable, uses `#!/bin/bash` + `set -e`. It: runs `git -C <repo-root> pull --ff-only` (exits non-zero if the pull fails); re-verifies the `<target>/.opencode/skills` symlink and recreates it if missing or pointing elsewhere; refreshes `<target>/AGENTS.md` **only if** its first line matches the installer marker; if not (hand-edited), leaves the file alone; if `AGENTS.md` is absent, exits non-zero directing the user to run `install-opencode.sh` first. `scripts/update-opencode-test.sh` asserts: (a) marker-tagged `AGENTS.md` is refreshed; (b) hand-edited `AGENTS.md` is left byte-for-byte unchanged; (c) missing `AGENTS.md` exits non-zero; (d) missing symlink is recreated. The test stubs `git pull` so it doesn't need network.
   - Verify: `bash scripts/update-opencode-test.sh` prints `update-opencode OK` and exits 0.
   - Files: `scripts/update-opencode.sh`, `scripts/update-opencode-test.sh`
