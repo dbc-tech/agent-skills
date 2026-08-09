@@ -23,7 +23,7 @@ Structure context from most persistent to most transient:
 
 ```
 ┌─────────────────────────────────────┐
-│  1. Rules Files (AGENTS.md and CLAUDE.md, etc.; prefer AGENTS.md)   │ ← Always loaded, project-wide
+│  1. Rules Files (AGENTS.md, etc.)  │ ← Always loaded, project-wide
 ├─────────────────────────────────────┤
 │  2. Spec / Architecture Docs        │ ← Loaded per feature/session
 ├─────────────────────────────────────┤

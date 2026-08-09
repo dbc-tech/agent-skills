@@ -325,7 +325,7 @@ After completing a simplification pass:
 - [ ] Linter/formatter passes (no style regressions)
 - [ ] Each simplification is a reviewable, incremental change
 - [ ] The diff is clean — no unrelated changes mixed in
-- [ ] Simplified code follows project conventions (checked against AGENTS.md and CLAUDE.md (prefer AGENTS.md) or equivalent)
+- [ ] Simplified code follows project conventions (checked against AGENTS.md and CLAUDE.md, prefer AGENTS.md, or equivalent)
 - [ ] No error handling was removed or weakened
 - [ ] No dead code was left behind (unused imports, unreachable branches)
 - [ ] A teammate or review agent would approve the change as a net improvement
