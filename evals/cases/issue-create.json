@@ -1,0 +1,44 @@
+{
+  "skill_name": "issue-create",
+  "trigger": {
+    "positive": [
+      {
+        "prompt": "Create a GitHub issue to track the build for this spec",
+        "top_k": 3
+      },
+      {
+        "prompt": "Raise a build issue now that the spec is merged",
+        "top_k": 3
+      },
+      {
+        "prompt": "Open an issue to track implementation of the merged specification",
+        "top_k": 3
+      }
+    ],
+    "negative": [
+      {
+        "prompt": "Raise a pull request to merge the specification document",
+        "owner": "spec-pr"
+      },
+      {
+        "prompt": "Implement the next task from the plan",
+        "owner": "incremental-implementation"
+      }
+    ]
+  },
+  "evals": [
+    {
+      "id": 1,
+      "kind": "dialogue",
+      "prompt": "The spec for widget-7 has been merged. Open a build issue to track its implementation.",
+      "expected_output": "A GitHub issue titled [BUILD] widget-7 with the build label, body linking to the spec/plan/todo files",
+      "expectations": [
+        "The issue title uses the [BUILD] prefix, not [SPEC]",
+        "The build label is applied to the issue",
+        "The issue body links to the spec, plan, and todo file paths",
+        "The skill reports the issue number and URL back",
+        "The <name> is kebab-cased from the # Spec: heading"
+      ]
+    }
+  ]
+}
