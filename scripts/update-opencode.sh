@@ -14,9 +14,15 @@ echo "  • pulling latest in ${REPO_ROOT}" >&2
 git -C "${REPO_ROOT}" pull --ff-only
 
 # 2. Re-verify the symlink. Recreate if missing.
+#    If the target is a real directory (a copy), back it up before replacing.
 REPO_SKILLS="${REPO_ROOT}/skills"
 if [ ! -L "${SKILLS_DIR}" ] || [ "$(readlink -f "${SKILLS_DIR}")" != "${REPO_SKILLS}" ]; then
   mkdir -p "$(dirname "${SKILLS_DIR}")"
+  if [ -d "${SKILLS_DIR}" ] && [ ! -L "${SKILLS_DIR}" ]; then
+    BACKUP="${SKILLS_DIR}.bak.$(date +%Y%m%d%H%M%S)"
+    mv "${SKILLS_DIR}" "${BACKUP}"
+    echo "  • backed up existing directory to ${BACKUP}" >&2
+  fi
   ln -sfn "${REPO_SKILLS}" "${SKILLS_DIR}"
   echo "  ✓ re-linked ${SKILLS_DIR} -> ${REPO_SKILLS}" >&2
 else

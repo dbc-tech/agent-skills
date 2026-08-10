@@ -14,10 +14,16 @@ command -v git >/dev/null 2>&1 || { echo "ERROR: git not found on PATH" >&2; exi
 mkdir -p "$(dirname "${SKILLS_DIR}")"
 
 # 2. Symlink .opencode/skills -> this repo's skills/.
+#    If the target is a real directory (a copy), back it up before replacing.
 REPO_SKILLS="$(cd "$(dirname "$0")/.." && pwd)/skills"
 if [ -L "${SKILLS_DIR}" ] && [ "$(readlink -f "${SKILLS_DIR}")" = "${REPO_SKILLS}" ]; then
   echo "  ✓ ${SKILLS_DIR} already linked" >&2
 else
+  if [ -d "${SKILLS_DIR}" ] && [ ! -L "${SKILLS_DIR}" ]; then
+    BACKUP="${SKILLS_DIR}.bak.$(date +%Y%m%d%H%M%S)"
+    mv "${SKILLS_DIR}" "${BACKUP}"
+    echo "  • backed up existing directory to ${BACKUP}" >&2
+  fi
   ln -sfn "${REPO_SKILLS}" "${SKILLS_DIR}"
   echo "  ✓ linked ${SKILLS_DIR} -> ${REPO_SKILLS}" >&2
 fi
