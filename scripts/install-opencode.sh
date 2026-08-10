@@ -22,7 +22,37 @@ else
   echo "  ✓ linked ${SKILLS_DIR} -> ${REPO_SKILLS}" >&2
 fi
 
-# 3. Scaffold AGENTS.md if absent. Never overwrite an existing file.
+# 3. Symlink commands into the global OpenCode config directory.
+#    Source: .claude/commands/ (shared across Claude Code and OpenCode).
+#    Target respects OPENCODE_CONFIG_DIR, then XDG_CONFIG_HOME, then ~/.config.
+REPO_COMMANDS="$(cd "$(dirname "$0")/.." && pwd)/.claude/commands"
+if [ -n "${OPENCODE_CONFIG_DIR}" ]; then
+  OPENCODE_CONFIG="${OPENCODE_CONFIG_DIR}"
+elif [ -n "${XDG_CONFIG_HOME}" ]; then
+  OPENCODE_CONFIG="${XDG_CONFIG_HOME}/opencode"
+else
+  OPENCODE_CONFIG="${HOME}/.config/opencode"
+fi
+COMMANDS_TARGET="${OPENCODE_CONFIG}/commands"
+
+if [ -d "${REPO_COMMANDS}" ]; then
+  mkdir -p "${COMMANDS_TARGET}"
+  for cmd_file in "${REPO_COMMANDS}"/*.md; do
+    [ -f "$cmd_file" ] || continue
+    cmd_name="$(basename "$cmd_file")"
+    cmd_target="${COMMANDS_TARGET}/${cmd_name}"
+    if [ -L "${cmd_target}" ] && [ "$(readlink -f "${cmd_target}")" = "${cmd_file}" ]; then
+      echo "  ✓ ${cmd_target} already linked" >&2
+    else
+      ln -sfn "${cmd_file}" "${cmd_target}"
+      echo "  ✓ linked ${cmd_target} -> ${cmd_file}" >&2
+    fi
+  done
+else
+  echo "  ⚠ no .claude/commands/ found in repo, skipping command installation" >&2
+fi
+
+# 4. Scaffold AGENTS.md if absent. Never overwrite an existing file.
 if [ ! -f "${AGENTS_FILE}" ]; then
   {
     echo "${INSTALLER_MARKER}"
@@ -42,8 +72,8 @@ else
   echo "  ✓ ${AGENTS_FILE} already present (left untouched)" >&2
 fi
 
-# 4. Verify.
+# 5. Verify.
 [ -d "${REPO_SKILLS}" ] || { echo "ERROR: skills/ not found at ${REPO_SKILLS}" >&2; exit 1; }
 [ -L "${SKILLS_DIR}" ]  || { echo "ERROR: ${SKILLS_DIR} not a symlink" >&2; exit 1; }
 
-echo "Done. Skills available at ${SKILLS_DIR}"
+echo "Done. Skills available at ${SKILLS_DIR}, commands at ${COMMANDS_TARGET}"

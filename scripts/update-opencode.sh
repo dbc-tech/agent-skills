@@ -23,7 +23,36 @@ else
   echo "  ✓ ${SKILLS_DIR} already linked" >&2
 fi
 
-# 3. Refresh AGENTS.md only if it carries the installer marker.
+# 3. Re-sync commands into the global OpenCode config directory.
+#    Mirrors install-opencode.sh: OPENCODE_CONFIG_DIR > XDG_CONFIG_HOME > ~/.config.
+REPO_COMMANDS="${REPO_ROOT}/.claude/commands"
+if [ -n "${OPENCODE_CONFIG_DIR}" ]; then
+  OPENCODE_CONFIG="${OPENCODE_CONFIG_DIR}"
+elif [ -n "${XDG_CONFIG_HOME}" ]; then
+  OPENCODE_CONFIG="${XDG_CONFIG_HOME}/opencode"
+else
+  OPENCODE_CONFIG="${HOME}/.config/opencode"
+fi
+COMMANDS_TARGET="${OPENCODE_CONFIG}/commands"
+
+if [ -d "${REPO_COMMANDS}" ]; then
+  mkdir -p "${COMMANDS_TARGET}"
+  for cmd_file in "${REPO_COMMANDS}"/*.md; do
+    [ -f "$cmd_file" ] || continue
+    cmd_name="$(basename "$cmd_file")"
+    cmd_target="${COMMANDS_TARGET}/${cmd_name}"
+    if [ -L "${cmd_target}" ] && [ "$(readlink -f "${cmd_target}")" = "${cmd_file}" ]; then
+      echo "  ✓ ${cmd_target} already linked" >&2
+    else
+      ln -sfn "${cmd_file}" "${cmd_target}"
+      echo "  ✓ linked ${cmd_target} -> ${cmd_file}" >&2
+    fi
+  done
+else
+  echo "  ⚠ no .claude/commands/ found in repo, skipping command sync" >&2
+fi
+
+# 4. Refresh AGENTS.md only if it carries the installer marker.
 if [ -f "${AGENTS_FILE}" ] && head -n1 "${AGENTS_FILE}" | grep -qF "${INSTALLER_MARKER}"; then
   # Re-scaffold with the latest template (marker preserved).
   {
@@ -47,7 +76,7 @@ else
   exit 1
 fi
 
-# 4. Verify.
+# 5. Verify.
 [ -L "${SKILLS_DIR}" ] || { echo "ERROR: ${SKILLS_DIR} not a symlink after update" >&2; exit 1; }
 
-echo "Done. Skills at ${SKILLS_DIR}"
+echo "Done. Skills at ${SKILLS_DIR}, commands at ${COMMANDS_TARGET}"
