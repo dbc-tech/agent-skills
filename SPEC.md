@@ -2,7 +2,7 @@
 
 ## Objective
 
-Extend the **agent-skills** framework itself (the `addyosmani/agent-skills` repo) so that spec → plan → build → PR can be driven from a **GitHub Issue**, and so that the framework can be installed into OpenCode with a single script and a tested setup guide.
+Extend the **agent-skills** framework itself (the `dbc-tech/agent-skills` repo) so that spec → plan → build → PR can be driven from a **GitHub Issue**, and so that the framework can be installed into OpenCode with a single script and a tested setup guide.
 
 ### Why
 
@@ -368,7 +368,7 @@ if [ ! -f "${AGENTS_FILE}" ]; then
     echo "- If a task matches a skill, invoke it via the \`skill\` tool."
     echo "- Prefer \`AGENTS.md\` over \`CLAUDE.md\` when both exist."
     echo ""
-    echo "See https://github.com/addyosmani/agent-skills for the full catalog."
+    echo "See https://github.com/dbc-tech/agent-skills for the full catalog."
   } >"${AGENTS_FILE}"
   echo "  ✓ wrote ${AGENTS_FILE}" >&2
 else
@@ -428,7 +428,7 @@ if [ -f "${AGENTS_FILE}" ] && head -n1 "${AGENTS_FILE}" | grep -qF "${INSTALLER_
     echo "- If a task matches a skill, invoke it via the \`skill\` tool."
     echo "- Prefer \`AGENTS.md\` over \`CLAUDE.md\` when both exist."
     echo ""
-    echo "See https://github.com/addyosmani/agent-skills for the full catalog."
+    echo "See https://github.com/dbc-tech/agent-skills for the full catalog."
   } >"${AGENTS_FILE}"
   echo "  ✓ refreshed ${AGENTS_FILE} (installer-managed)" >&2
 elif [ -f "${AGENTS_FILE}" ]; then

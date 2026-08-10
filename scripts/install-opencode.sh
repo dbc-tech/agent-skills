@@ -35,7 +35,7 @@ if [ ! -f "${AGENTS_FILE}" ]; then
     echo "- If a task matches a skill, invoke it via the \`skill\` tool."
     echo "- Prefer \`AGENTS.md\` over \`CLAUDE.md\` when both exist."
     echo ""
-    echo "See https://github.com/addyosmani/agent-skills for the full catalog."
+    echo "See https://github.com/dbc-tech/agent-skills for the full catalog."
   } >"${AGENTS_FILE}"
   echo "  ✓ wrote ${AGENTS_FILE}" >&2
 else

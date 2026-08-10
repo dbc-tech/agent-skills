@@ -36,7 +36,7 @@ The installer script symlinks `.opencode/skills` to this repo's `skills/` direct
 
 ```bash
 # Clone the repo (if you haven't already)
-git clone https://github.com/addyosmani/agent-skills.git
+git clone https://github.com/dbc-tech/agent-skills.git
 cd agent-skills
 
 # Install into the current directory
@@ -70,7 +70,7 @@ This marker is how the updater knows the file was written by the installer (and 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/addyosmani/agent-skills.git
+git clone https://github.com/dbc-tech/agent-skills.git
 ```
 
 2. Open the project in OpenCode.

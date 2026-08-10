@@ -37,7 +37,7 @@ if [ -f "${AGENTS_FILE}" ] && head -n1 "${AGENTS_FILE}" | grep -qF "${INSTALLER_
     echo "- If a task matches a skill, invoke it via the \`skill\` tool."
     echo "- Prefer \`AGENTS.md\` over \`CLAUDE.md\` when both exist."
     echo ""
-    echo "See https://github.com/addyosmani/agent-skills for the full catalog."
+    echo "See https://github.com/dbc-tech/agent-skills for the full catalog."
   } >"${AGENTS_FILE}"
   echo "  ✓ refreshed ${AGENTS_FILE} (installer-managed)" >&2
 elif [ -f "${AGENTS_FILE}" ]; then
