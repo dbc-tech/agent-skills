@@ -21,7 +21,9 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 
 ## Commands
 
-8 slash commands that map to the development lifecycle. Each one activates the right skills automatically.
+13 slash commands that map to the development lifecycle. Each one activates the right skills automatically.
+
+### Core lifecycle commands
 
 | What you're doing | Command | Key principle |
 |-------------------|---------|---------------|
@@ -36,11 +38,39 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 
 Want fewer manual steps once the spec exists? **`/build auto`** generates the plan and implements every task in a single approved pass — you approve the plan once, then it runs autonomously. It removes the human stepping *between* tasks, not the verification: every task is still test-driven and committed individually, and it pauses on failures or risky steps.
 
+### Issue-driven build commands
+
+Five commands that close the loop from a merged spec to a traceable GitHub Issue and linked pull request. Requires the [`gh` CLI](https://cli.github.com/).
+
+| What you're doing | Command | Key principle |
+|-------------------|---------|---------------|
+| Raise a PR for the spec itself | `/spec-pr` | Review the spec before building |
+| Open a build-tracking issue | `/issue-create` | Link specs to implementation work |
+| List open build issues | `/issue-list` | See what's waiting to be built |
+| Build from an issue | `/issue-build <n>` | Chain `/build` onto a tracked spec |
+| Raise an implementation PR | `/issue-pr <n>` | Link the PR back to the issue |
+
+**The issue-driven flow:**
+
+```
+/spec → /plan → /spec-pr          → merge the spec PR
+                 ↓
+         /issue-create             → opens [BUILD] <name> issue
+                 ↓
+         /issue-build <n>          → chains /build onto the spec
+                 ↓
+         /issue-pr <n>             → opens PR linked to issue #<n>
+```
+
+Each artefact shares the same kebab-cased `<name>` (derived from the `# Spec:` heading), disambiguated by prefix: `[SPEC]` for spec PRs, `[BUILD]` for build issues.
+
 Skills also activate automatically based on what you're doing — designing an API triggers `api-and-interface-design`, building UI triggers `frontend-ui-engineering`, and so on.
 
 ---
 
 ## Quick Start
+
+**Using OpenCode?** See the [OpenCode setup guide](docs/opencode-setup.md) for one-command installation via `scripts/install-opencode.sh`.
 
 **Fastest path — any agent, one command.** The open [skills CLI](https://github.com/vercel-labs/skills) installs into 70+ agents (Claude Code, Cursor, Codex, Copilot, Cline, and more):
 
@@ -375,9 +405,9 @@ agent-skills/
 ├── agents/                            # 4 specialist personas
 ├── references/                        # 7 supplementary checklists
 ├── hooks/                             # Session lifecycle hooks
-├── .claude/commands/                  # 8 slash commands (Claude Code)
-├── .gemini/commands/                  # 8 slash commands (Gemini CLI)
-├── commands/                          # 8 slash commands (Antigravity CLI)
+├── .claude/commands/                  # 13 slash commands (Claude Code)
+├── .gemini/commands/                  # 13 slash commands (Gemini CLI)
+├── commands/                          # 13 slash commands (Antigravity CLI)
 ├── plugin.json                        # Antigravity plugin manifest
 └── docs/                              # Setup guides per tool
 ```
