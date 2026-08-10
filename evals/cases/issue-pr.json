@@ -1,0 +1,56 @@
+{
+  "skill_name": "issue-pr",
+  "trigger": {
+    "positive": [
+      {
+        "prompt": "Raise a pull request for the implementation linked to this build issue",
+        "top_k": 3
+      },
+      {
+        "prompt": "Create a PR that resolves the build issue on GitHub",
+        "top_k": 3
+      },
+      {
+        "prompt": "Submit the completed build for review as a pull request",
+        "top_k": 3
+      }
+    ],
+    "negative": [
+      {
+        "prompt": "Raise a pull request to merge the specification document",
+        "owner": "spec-pr"
+      },
+      {
+        "prompt": "List the open build issues",
+        "owner": "issue-list"
+      }
+    ]
+  },
+  "evals": [
+    {
+      "id": 1,
+      "kind": "dialogue",
+      "prompt": "The build for issue #42 is complete. Raise a PR linked to it.",
+      "expected_output": "A pull request with Resolves #42 in the body, title derived from the issue, opened against the default branch",
+      "expectations": [
+        "The PR body contains Resolves #42 at the top",
+        "The PR title is derived from the issue title",
+        "The PR is opened against the repo's default branch",
+        "The skill does not merge the PR",
+        "The skill does not close the issue",
+        "The PR URL is reported back to the user"
+      ]
+    },
+    {
+      "id": 2,
+      "kind": "dialogue",
+      "prompt": "Raise a PR for issue #57 but gh is not installed — what happens?",
+      "expected_output": "The skill reports that gh is not on PATH and stops",
+      "expectations": [
+        "The skill checks for gh on PATH before proceeding",
+        "The skill reports the missing prerequisite clearly",
+        "No PR is created"
+      ]
+    }
+  ]
+}

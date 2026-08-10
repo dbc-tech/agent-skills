@@ -142,10 +142,10 @@ If a task is L or larger, it should be broken into smaller tasks. An agent perfo
 
 ## Output Files
 
-- **Plan document:** Save the implementation plan to `tasks/plan.md`.
-- **Task list:** Save the checklist-style task list to `tasks/todo.md`.
+- **Plan document:** Save the implementation plan to `specs/<feature>/tasks/plan.md`.
+- **Task list:** Save the checklist-style task list to `specs/<feature>/tasks/todo.md`.
 
-Create the `tasks/` directory if it does not exist. These paths are the convention expected by the `/build` command and other downstream tooling.
+Where `<feature>` matches the spec's directory name (e.g. if the spec is at `specs/widget-7/SPEC.md`, the plan and todo go to `specs/widget-7/tasks/plan.md` and `specs/widget-7/tasks/todo.md`). Create `specs/<feature>/tasks/` if it does not exist. If the spec is at the repo root (legacy `SPEC.md`), fall back to `tasks/plan.md` and `tasks/todo.md`. These paths are the convention expected by the `/build` command and other downstream tooling.
 
 ## Plan Document Template
 

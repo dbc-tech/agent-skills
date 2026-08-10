@@ -13,7 +13,7 @@ Each skill is a Markdown file (`SKILL.md`) that describes a specific engineering
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/addyosmani/agent-skills.git
+git clone https://github.com/dbc-tech/agent-skills.git
 ```
 
 ### 2. Choose a skill
@@ -146,7 +146,7 @@ to supplementary checklists in the repo-level `references/` directory are
 unavailable. Use a whole-repo integration, clone the repository, or copy the
 needed checklist into a `references/` directory inside the installed skill.
 This portability gap is tracked in
-[addyosmani/agent-skills#361](https://github.com/addyosmani/agent-skills/issues/361).
+[dbc-tech/agent-skills#361](https://github.com/dbc-tech/agent-skills/issues/361).
 
 ## Spec and task artifacts
 

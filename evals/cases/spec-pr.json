@@ -1,0 +1,43 @@
+{
+  "skill_name": "spec-pr",
+  "trigger": {
+    "positive": [
+      {
+        "prompt": "Raise a pull request for the spec we just wrote",
+        "top_k": 3
+      },
+      {
+        "prompt": "Submit the specification for team review via a PR",
+        "top_k": 3
+      },
+      {
+        "prompt": "Create a spec PR so we can merge the spec before building",
+        "top_k": 3
+      }
+    ],
+    "negative": [
+      {
+        "prompt": "Open a GitHub issue to track the build for this project"
+      },
+      {
+        "prompt": "Implement the next task from the plan",
+        "owner": "incremental-implementation"
+      }
+    ]
+  },
+  "evals": [
+    {
+      "id": 1,
+      "kind": "dialogue",
+      "prompt": "We've written the spec for the widget-7 feature at specs/widget-7/SPEC.md. Raise a PR to merge it.",
+      "expected_output": "A pull request titled [SPEC] widget-7 with the spec label, body referencing the spec/plan/todo files, opened against the default branch",
+      "expectations": [
+        "The PR title uses the [SPEC] prefix, not [BUILD]",
+        "The spec label is applied to the PR",
+        "The PR body references the spec, plan, and todo file paths",
+        "The skill does not merge the PR",
+        "The <name> is kebab-cased from the # Spec: heading"
+      ]
+    }
+  ]
+}

@@ -79,6 +79,8 @@ Don't silently fill in ambiguous requirements. The spec's entire purpose is to s
    - **Ask first:** Database schema changes, adding dependencies, changing CI config
    - **Never do:** Commit secrets, edit vendor directories, remove failing tests without approval
 
+**Output convention:** Save the spec to `specs/<feature>/SPEC.md`, where `<feature>` is the spec title kebab-cased (e.g. `# Spec: Widget 7` → `specs/widget-7/SPEC.md`). If the project has no existing `specs/` convention, fall back to `SPEC.md` at the repo root.
+
 **Spec template:**
 
 ```markdown
@@ -140,7 +142,7 @@ With the validated spec, generate a technical implementation plan:
 
 > Follow `planning-and-task-breakdown` for the dependency-graph mapping and vertical-slicing mechanics behind these steps; it is the canonical source. The bullets above are a lightweight summary; if they ever diverge, `planning-and-task-breakdown` takes precedence.
 >
-> **Output convention:** Save the plan to `tasks/plan.md` and the task list to `tasks/todo.md`, per the `/plan` command convention. Create `tasks/` if it does not exist. Downstream commands (`/build`, etc.) expect these paths.
+> **Output convention:** Save the plan to `specs/<feature>/tasks/plan.md` and the task list to `specs/<feature>/tasks/todo.md`, where `<feature>` matches the spec's directory name. Create `specs/<feature>/tasks/` if it does not exist. If the spec is at the repo root (legacy), fall back to `tasks/plan.md` and `tasks/todo.md`. Downstream commands (`/build`, etc.) expect these paths.
 
 The plan should be reviewable: the human should be able to read it and say "yes, that's the right approach" or "no, change X."
 
@@ -203,4 +205,4 @@ Before proceeding to implementation, confirm:
 - [ ] The human has reviewed and approved the spec
 - [ ] Success criteria are specific and testable
 - [ ] Boundaries (Always/Ask First/Never) are defined
-- [ ] The spec is saved to a file in the repository
+- [ ] The spec is saved to `specs/<feature>/SPEC.md` (or `SPEC.md` at the repo root for legacy projects)
