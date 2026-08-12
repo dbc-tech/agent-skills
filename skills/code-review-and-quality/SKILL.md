@@ -202,6 +202,60 @@ Check the author's verification story:
 - Is there a before/after comparison?
 ```
 
+## OCR Delegate Review (Local)
+
+Use OCR delegate mode when the local review should follow project-specific rules. OCR supplies deterministic scaffolding; the host reviewer evaluates the changes. Follow this sequence:
+
+1. **Prerequisite guard** — Confirm that the OCR CLI is available:
+
+   ```bash
+   command -v ocr || echo "Install: npm install -g @alibaba-group/open-code-review"
+   ```
+
+   If the command is missing, stop the review and direct the user to install it. Confirm `ocr --version` supports delegate mode before relying on the output; a stale global install may need an upgrade.
+
+2. **Preview** — List reviewable files and capture the reported mode and ref metadata:
+
+   ```bash
+   ocr delegate preview [--from <ref> --to <ref>] [--commit <hash>] [--exclude <patterns>]
+   ```
+
+   The mode is workspace, range, or commit. Respect the preview's exclusions; do not review excluded files.
+
+3. **Rules** — Pass every reviewable path from the preview to OCR:
+
+   ```bash
+   ocr delegate rule <path1> <path2> ...
+   ```
+
+   Resolve the rule groups by content so shared rules are not repeated. Record which reviewable files belong to each group.
+
+4. **Diff** — Retrieve each reviewable file's change using the mode from the preview:
+
+   ```bash
+   # Range mode
+   git diff <merge_base>..<to> -- <path>
+
+   # Commit mode
+   git show <commit> -- <path>
+
+   # Workspace mode
+   git diff HEAD -- <path>
+
+   # New untracked file in workspace mode
+   cat <path>
+   ```
+
+5. **Review** — Review every file against its matching rule group, using those rules as the checklist and the five review axes above for coverage.
+
+6. **Report** — Use one delegate-report rubric and fold low-priority noise:
+
+   - **Critical / High** — Security, data loss, broken behavior, or an API-contract regression. Always report.
+   - **Medium / Warning** — Likely bugs, edge-case regressions, missing validation, or maintainability problems with real future risk. Report with context.
+   - **Low / Nit** — Style, naming, or optional improvements. Do not silently discard these findings: include `Nits (folded): N` in the report, and surface any low finding that is clearly valuable.
+
+This is the delegate report's compact presentation of the core taxonomy in Step 4, not a replacement taxonomy. Critical or required findings remain blocking, Medium / Warning findings carry the context needed for action, and Low / Nit findings align with Nit, Optional, or Suggestion feedback.
+
 ## Multi-Model Review Pattern
 
 Use different models for different review perspectives:

@@ -13,6 +13,14 @@
       {
         "prompt": "Can you review the changes another model just wrote for me?",
         "top_k": 3
+      },
+      {
+        "prompt": "Run an OCR delegate review on this diff",
+        "top_k": 3
+      },
+      {
+        "prompt": "Review the changed files using ocr delegate mode and the project review rules",
+        "top_k": 3
       }
     ],
     "negative": [
@@ -39,6 +47,18 @@
         "Every finding carries a severity label from the skill's taxonomy",
         "Security of user input is explicitly considered for the new endpoint",
         "The review leads with high-leverage findings rather than nits"
+      ]
+    },
+    {
+      "id": 2,
+      "kind": "dialogue",
+      "prompt": "Run an OCR delegate review of the current workspace changes using the project review rules. Explain the commands you use and deliver the final review report.",
+      "expected_output": "A local delegate review that follows the prerequisite, preview, rules, per-file diff, review, and report sequence with one severity rubric and a folded nit count",
+      "expectations": [
+        "The response checks whether the ocr CLI is installed and directs installation if it is missing",
+        "The workflow uses or requests ocr delegate preview, ocr delegate rule for the reviewable paths, and the mode-appropriate per-file git diff or show command in that order",
+        "Every reviewed file is checked against its matching rule group and findings use one uniform Critical/High, Medium/Warning, and Low/Nit rubric",
+        "Low-priority findings are represented by a Nits (folded): N count rather than silently dropped"
       ]
     }
   ]
