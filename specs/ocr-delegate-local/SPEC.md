@@ -19,7 +19,7 @@ The team wants this available as a **local / pre-PR dev workflow**. This work em
 
 ## 2a. Scope & applicability
 
-OCR delegate review is a **code/content review** tool: `ocr delegate preview` selects files by a compiled-in reviewable-extension allowlist (e.g. `.ts`, `.tsx`, `.json`, `.toml`, `.yml`, `.yaml`, `.js`, `.sh`, `.md` where supported) and reports unsupported extensions as `excluded: unsupported_ext`. On this repository the majority of content is Markdown, which the CLI may not select in its default preview allowlist.
+OCR delegate review is a **code/content review** tool: `ocr delegate preview` selects files by a compiled-in reviewable-extension allowlist (e.g. `.ts`, `.tsx`, `.json`, `.toml`, `.yml`, `.yaml`, `.js`, `.sh`, as verified against v1.9.2) and reports unsupported extensions as `excluded: unsupported_ext`. On this repository the majority of content is Markdown, which the CLI does not select in its default preview allowlist.
 
 Decision: the delegate workflow still applies here, with an explicit contract:
 - Files the preview selects are reviewed against their rule groups via the delegate flow.
@@ -68,7 +68,7 @@ Confirmed redundant — existing scripts distribute `skills/` + `.claude/command
 **Install decision (owner):** the OCR CLI is installed **unpinned** — `npm install -g @alibaba-group/open-code-review`, no version suffix, and not `latest` as a separate pin. Rationale: keep setup simple for a dev-local tool. Compensating controls because install is unpinned:
 - **Record the tested version.** The delegate contract in this spec and the docs is verified against a specific version (v1.9.2 as of 2026-08-12); record it so "is my CLI recent enough" is a decidable check (`ocr delegate --help`) rather than a guess.
 - **Runtime update control.** The CLI launcher can run a background npm-registry update check on startup; suppress with `OCR_NO_UPDATE=1` for review invocations on sensitive repos so an unpinned install is still stable at runtime.
-- **No unexpected egress.** Delegate review does not transmit repo content to an OCR endpoint (verified). The install-time native-binary download is checksum/sha-verified by the installer; the startup update check is the one ambient registry call, controlled by `OCR_NO_UPDATE`.
+- **No unexpected egress.** Delegate review does not transmit repo content to an OCR endpoint (verified on v1.9.2 by inspecting the wrapper and running a preview under a network/strace watch with `OCR_NO_UPDATE=1`). The install-time native-binary download is checksum/sha-verified by the installer; the startup update check is the one ambient registry call, controlled by `OCR_NO_UPDATE`.
 - Vendor the skill/command content as a **human-reviewed snapshot**; keep Apache-2.0 attribution + applicable third-party notice on vendored content.
 
 ## 5. Canonical severity rubric
@@ -95,7 +95,7 @@ Adopt a single rubric across the skill + command so the host agent's output is c
 | `.claude/commands/delegate-review.md` | New command (identical `description` across dirs) |
 | `.gemini/commands/delegate-review.toml` | New command |
 | `commands/delegate-review.toml` | New command |
-| `docs/ocr-delegate-setup.md` | New setup guide (pinned-tested-version + workflow + behaviour notes) |
+| `docs/ocr-delegate-setup.md` | New setup guide (recorded tested version + workflow + behaviour notes) |
 | `evals/cases/code-review-and-quality.json` | Add OCR-delegate trigger (positive + negative) + behavioral cases |
 | `README.md` | Command count 13→14, add `/delegate-review`, link the setup guide |
 
