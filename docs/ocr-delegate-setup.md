@@ -14,13 +14,13 @@ The workflow is defined in the `code-review-and-quality` skill under **OCR Deleg
 
 ## Prerequisites
 
-Install the OCR CLI if it is not already available:
+Install the OCR CLI if it is not already available, taking the current release:
 
 ```bash
 command -v ocr || echo "Install: npm install -g @alibaba-group/open-code-review"
 ```
 
-The delegate contract in this guide was verified against `@alibaba-group/open-code-review` v1.9.2 on 2026-08-12. Before relying on output, confirm delegate supports your version with `ocr delegate --help`; upgrade the global install and re-verify if a newer version behaves differently.
+The delegate contract in this guide is verified against the current OCR release at the time you set up. Before relying on output, confirm the current install supports delegate mode with `ocr delegate --help`. Keeping the CLI current is a hygiene step in the normal review loop: install the latest when you first set up and update the global install as you go when a newer release lands or behaviour looks off.
 
 ## Running the Workflow
 

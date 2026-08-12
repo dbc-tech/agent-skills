@@ -206,7 +206,7 @@ Check the author's verification story:
 
 Use OCR delegate mode when the local review should follow project-specific rules. OCR supplies deterministic scaffolding; the host reviewer evaluates the changes. Follow this sequence:
 
-Scope: OCR delegate preview reviews code/content files by extension. In the verified v1.9.2 baseline, preview accepted `.c`, `.cpp`, `.cs`, `.css`, `.go`, `.h`, `.html`, `.java`, `.js`, `.json`, `.jsx`, `.kt`, `.php`, `.py`, `.rb`, `.rs`, `.scss`, `.sh`, `.sql`, `.svelte`, `.swift`, `.toml`, `.ts`, `.tsx`, `.vue`, `.xml`, `.yml`, and `.yaml`; markdown (`.md` and `.mdx`) and `.txt` were not in the default preview allowlist and were rejected as `unsupported_ext`. When files are excluded, REPORT the excluded set explicitly in the review (path + reason) instead of silently skipping them, and cover those files with the normal five-axis review below so nothing unaddressed is dropped.
+Scope: OCR delegate preview reviews code/content files by extension. The allowlist is compiled into the CLI and may vary by release — on the current release it accepted `.c`, `.cpp`, `.cs`, `.css`, `.go`, `.h`, `.html`, `.java`, `.js`, `.json`, `.jsx`, `.kt`, `.php`, `.py`, `.rb`, `.rs`, `.scss`, `.sh`, `.sql`, `.svelte`, `.swift`, `.toml`, `.ts`, `.tsx`, `.vue`, `.xml`, `.yml`, and `.yaml`; markdown (`.md` and `.mdx`) and `.txt` were not in the default preview allowlist and were rejected as `unsupported_ext`. When files are excluded, REPORT the excluded set explicitly in the review (path + reason) instead of silently skipping them, and cover those files with the normal five-axis review below so nothing unaddressed is dropped.
 
 1. **Prerequisite guard** — Confirm that the OCR CLI is available:
 
@@ -214,7 +214,7 @@ Scope: OCR delegate preview reviews code/content files by extension. In the veri
    command -v ocr || echo "Install: npm install -g @alibaba-group/open-code-review"
    ```
 
-   If the command is missing, stop the review and direct the user to install it. Confirm `ocr delegate --help` resolves before relying on the output; the version tells you it supports delegation only if you know the cutoff, and a stale global install may need an upgrade.
+   If the command is missing, stop the review and direct the user to install the current release. Confirm `ocr delegate --help` resolves before relying on the output; a stale global install may need an upgrade. Keeping the global install current is a hygiene step in the review loop — update it when a newer release lands or behaviour looks off.
 
    The OCR launcher may perform a background update check to the npm registry on startup; set `OCR_NO_UPDATE=1` in the environment for review invocations to suppress it.
 
