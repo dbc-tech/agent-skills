@@ -21,7 +21,7 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 
 ## Commands
 
-13 slash commands that map to the development lifecycle. Each one activates the right skills automatically.
+14 slash commands that map to the development lifecycle. Each one activates the right skills automatically.
 
 ### Core lifecycle commands
 
@@ -32,6 +32,7 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 | Build incrementally | `/build` | One slice at a time |
 | Prove it works | `/test` | Tests are proof |
 | Review before merge | `/review` | Improve code health |
+| Review with OCR delegate mode | `/delegate-review` | Project rules with folded low-priority findings |
 | Audit web performance | `/webperf` | Measure before you optimize |
 | Simplify the code | `/code-simplify` | Clarity over cleverness |
 | Ship to production | `/ship` | Faster is safer |
@@ -71,6 +72,8 @@ Skills also activate automatically based on what you're doing — designing an A
 ## Quick Start
 
 **Using OpenCode?** See the [OpenCode setup guide](docs/opencode-setup.md) for one-command installation via `scripts/install-opencode.sh`.
+
+**Using OCR delegate review?** See the [OCR delegate setup guide](docs/ocr-delegate-setup.md) for the local, rules-driven workflow.
 
 **Fastest path — any agent, one command.** The open [skills CLI](https://github.com/vercel-labs/skills) installs into 70+ agents (Claude Code, Cursor, Codex, Copilot, Cline, and more):
 
@@ -405,9 +408,9 @@ agent-skills/
 ├── agents/                            # 4 specialist personas
 ├── references/                        # 7 supplementary checklists
 ├── hooks/                             # Session lifecycle hooks
-├── .claude/commands/                  # 13 slash commands (Claude Code)
-├── .gemini/commands/                  # 13 slash commands (Gemini CLI)
-├── commands/                          # 13 slash commands (Antigravity CLI)
+├── .claude/commands/                  # 14 slash commands (Claude Code)
+├── .gemini/commands/                  # 14 slash commands (Gemini CLI)
+├── commands/                          # 14 slash commands (Antigravity CLI)
 ├── plugin.json                        # Antigravity plugin manifest
 └── docs/                              # Setup guides per tool
 ```

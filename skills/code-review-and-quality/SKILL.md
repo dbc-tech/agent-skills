@@ -206,6 +206,8 @@ Check the author's verification story:
 
 Use OCR delegate mode when the local review should follow project-specific rules. OCR supplies deterministic scaffolding; the host reviewer evaluates the changes. Follow this sequence:
 
+Scope: OCR delegate preview reviews code/content files by extension. In the verified v1.9.2 baseline, preview accepted `.c`, `.cpp`, `.cs`, `.css`, `.go`, `.h`, `.html`, `.java`, `.js`, `.json`, `.jsx`, `.kt`, `.php`, `.py`, `.rb`, `.rs`, `.scss`, `.sh`, `.sql`, `.svelte`, `.swift`, `.toml`, `.ts`, `.tsx`, `.vue`, `.xml`, `.yml`, and `.yaml`; markdown (`.md` and `.mdx`) and `.txt` were not in the default preview allowlist and were rejected as `unsupported_ext`. When files are excluded, REPORT the excluded set explicitly in the review (path + reason) instead of silently skipping them, and cover those files with the normal five-axis review below so nothing unaddressed is dropped.
+
 1. **Prerequisite guard** — Confirm that the OCR CLI is available:
 
    ```bash
@@ -214,13 +216,15 @@ Use OCR delegate mode when the local review should follow project-specific rules
 
    If the command is missing, stop the review and direct the user to install it. Confirm `ocr --version` supports delegate mode before relying on the output; a stale global install may need an upgrade.
 
+   The OCR launcher may perform a background update check to the npm registry on startup; set `OCR_NO_UPDATE=1` in the environment for review invocations to suppress it.
+
 2. **Preview** — List reviewable files and capture the reported mode and ref metadata:
 
    ```bash
    ocr delegate preview [--from <ref> --to <ref>] [--commit <hash>] [--exclude <patterns>]
    ```
 
-   The mode is workspace, range, or commit. Respect the preview's exclusions; do not review excluded files.
+   The mode is workspace, range, or commit. Respect the preview's exclusions in the delegate workflow, report each excluded path and reason, and use the normal five-axis review for excluded files.
 
 3. **Rules** — Pass every reviewable path from the preview to OCR:
 
@@ -246,6 +250,8 @@ Use OCR delegate mode when the local review should follow project-specific rules
    cat <path>
    ```
 
+   Account for every file returned by the preview, including tracked files and untracked/new (`[added]`) files. Explicitly report any skipped file and why; never report partial coverage as complete.
+
 5. **Review** — Review every file against its matching rule group, using those rules as the checklist and the five review axes above for coverage.
 
 6. **Report** — Use one delegate-report rubric and fold low-priority noise:
@@ -254,7 +260,13 @@ Use OCR delegate mode when the local review should follow project-specific rules
    - **Medium / Warning** — Likely bugs, edge-case regressions, missing validation, or maintainability problems with real future risk. Report with context.
    - **Low / Nit** — Style, naming, or optional improvements. Do not silently discard these findings: include `Nits (folded): N` in the report, and surface any low finding that is clearly valuable.
 
-This is the delegate report's compact presentation of the core taxonomy in Step 4, not a replacement taxonomy. Critical or required findings remain blocking, Medium / Warning findings carry the context needed for action, and Low / Nit findings align with Nit, Optional, or Suggestion feedback.
+This is the delegate report's compact presentation of the core taxonomy in Step 4:
+
+- **Critical / High** maps to the skill's required or Critical findings and blocks merge.
+- **Medium / Warning** maps to context-bearing findings that need action but are not merge-blocking.
+- **Low / Nit** maps to the skill's Nit / Optional / Suggestion tier and is folded into a `Nits (folded): N` count.
+
+This rubric applies to delegate reports only and does not replace the skill's five-axis review or the severity labels used for normal reviews.
 
 ## Multi-Model Review Pattern
 

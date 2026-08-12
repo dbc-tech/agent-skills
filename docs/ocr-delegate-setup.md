@@ -6,6 +6,10 @@ This guide explains how to run a local, rules-driven review with Open Code Revie
 
 Delegate mode produces deterministic review scaffolding: the reviewable file list, mode and ref metadata, exclusions, and per-file rule groups. The host reviewer then reads each diff, applies the matching rules, and reports the findings. Use it for a local review when project rules should guide the review without an OCR-side endpoint.
 
+Delegate review runs against the local repository and does not transmit repository content to an OCR endpoint. The launcher may perform a background npm-registry update check on startup; set `OCR_NO_UPDATE=1` in the environment for review invocations to suppress it. When the installer downloads the native binary, it verifies the download against its published SHA-256 checksum.
+
+OCR preview reviews code/content extensions, but its reviewable-extension allowlist may exclude documentation formats such as markdown as `unsupported_ext`. Report excluded files explicitly and review them through the skill's normal five-axis path so no file is silently dropped.
+
 The workflow is defined in the `code-review-and-quality` skill under **OCR Delegate Review (Local)** and is available through the `/delegate-review` command.
 
 ## Prerequisites
@@ -13,10 +17,10 @@ The workflow is defined in the `code-review-and-quality` skill under **OCR Deleg
 Install the OCR CLI if it is not already available:
 
 ```bash
-which ocr || npm install -g @alibaba-group/open-code-review
+command -v ocr || echo "Install: npm install -g @alibaba-group/open-code-review"
 ```
 
-Also confirm the displayed CLI version is recent enough to support delegate mode (`ocr --version`) when reviewing; if a version behaves unexpectedly, upgrade the global install and note it in the review.
+The delegate contract in this guide was verified against `@alibaba-group/open-code-review` v1.9.2 on 2026-08-12. Before relying on output, confirm delegate supports your version with `ocr delegate --help`; upgrade the global install and re-verify if a newer version behaves differently.
 
 ## Running the Workflow
 
@@ -72,7 +76,8 @@ This delegate report format is a compact presentation of the review skill's exis
 
 ## Verification
 
-1. Run `which ocr` and confirm it resolves to the installed CLI.
+1. Run `command -v ocr` and confirm it resolves to the installed CLI.
 2. Run `ocr delegate preview` and confirm the reported files, exclusions, mode, and refs match the intended review scope.
 3. Run `ocr delegate rule <paths>` and confirm every reviewable file maps to a rule group.
-4. Confirm every reviewable file was reviewed and the report includes `Nits (folded): N`, even when the count is zero.
+4. Confirm every file the preview returned is either reviewed or explicitly reported as skipped, with a reason.
+5. Confirm every reviewable file was reviewed and the report includes `Nits (folded): N`, even when the count is zero.

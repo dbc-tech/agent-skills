@@ -29,6 +29,10 @@
         "owner": "shipping-and-launch"
       },
       {
+        "prompt": "Deploy the reviewed changes to production with a rollback strategy",
+        "owner": "shipping-and-launch"
+      },
+      {
         "prompt": "Write a failing test for the bug before fixing it",
         "owner": "test-driven-development"
       }
@@ -52,12 +56,12 @@
     {
       "id": 2,
       "kind": "dialogue",
-      "prompt": "Run an OCR delegate review of the current workspace changes using the project review rules. Explain the commands you use and deliver the final review report.",
-      "expected_output": "A local delegate review that follows the prerequisite, preview, rules, per-file diff, review, and report sequence with one severity rubric and a folded nit count",
+      "prompt": "The ocr CLI is not installed. You've been asked to run an OCR delegate review. Explain what you check and what you do.",
+      "expected_output": "A missing-CLI response that checks the prerequisite, directs installation without pretending to review, and explains the post-install preview, rules, per-file diff, review, and report sequence with folded nits",
       "expectations": [
-        "The response checks whether the ocr CLI is installed and directs installation if it is missing",
-        "The workflow uses or requests ocr delegate preview, ocr delegate rule for the reviewable paths, and the mode-appropriate per-file git diff or show command in that order",
-        "Every reviewed file is checked against its matching rule group and findings use one uniform Critical/High, Medium/Warning, and Low/Nit rubric",
+        "The response checks for the ocr CLI with command -v ocr",
+        "Because the CLI is absent, the response directs installation rather than pretending to run the review",
+        "Once installed, the workflow proceeds in preview, rule resolution, per-file diff, review, and report order",
         "Low-priority findings are represented by a Nits (folded): N count rather than silently dropped"
       ]
     }
