@@ -214,7 +214,7 @@ Scope: OCR delegate preview reviews code/content files by extension. In the veri
    command -v ocr || echo "Install: npm install -g @alibaba-group/open-code-review"
    ```
 
-   If the command is missing, stop the review and direct the user to install it. Confirm `ocr --version` supports delegate mode before relying on the output; a stale global install may need an upgrade.
+   If the command is missing, stop the review and direct the user to install it. Confirm `ocr delegate --help` resolves before relying on the output; the version tells you it supports delegation only if you know the cutoff, and a stale global install may need an upgrade.
 
    The OCR launcher may perform a background update check to the npm registry on startup; set `OCR_NO_UPDATE=1` in the environment for review invocations to suppress it.
 
