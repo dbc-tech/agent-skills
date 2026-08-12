@@ -19,7 +19,7 @@ The team wants this available as a **local / pre-PR dev workflow**. This work em
 
 ## 2a. Scope & applicability
 
-OCR delegate review is a **code/content review** tool: `ocr delegate preview` selects files by a compiled-in reviewable-extension allowlist (e.g. `.ts`, `.tsx`, `.json`, `.toml`, `.yml`, `.yaml`, `.js`, `.sh`, as verified against v1.9.2) and reports unsupported extensions as `excluded: unsupported_ext`. On this repository the majority of content is Markdown, which the CLI does not select in its default preview allowlist.
+OCR delegate review is a **code/content review** tool: `ocr delegate preview` selects files by a compiled-in reviewable-extension allowlist (e.g. `.ts`, `.tsx`, `.json`, `.toml`, `.yml`, `.yaml`, `.js`, `.sh`) and reports unsupported extensions as `excluded: unsupported_ext`. On this repository the majority of content is Markdown, which the CLI does not select in its default preview allowlist.
 
 Decision: the delegate workflow still applies here, with an explicit contract:
 - Files the preview selects are reviewed against their rule groups via the delegate flow.
@@ -38,7 +38,7 @@ Add an **OCR delegate scaffolding** section (or a `references/` file under that 
 4. **Review** — review each file against its rule group.
 5. **Report** — classify findings under **one canonical severity rubric** and **fold nits into a count** rather than silently deleting them (keeps review signal credible).
 
-Prerequisite guard: at the top of the flow, `command -v ocr ||` prompt to install (non-executing echo form). Confirm `ocr delegate --help` resolves so the installed version supports delegate mode; record the tested version (see §4).
+Prerequisite guard: at the top of the flow, `command -v ocr ||` prompt to install (non-executing echo form). Confirm `ocr delegate --help` resolves so the current install supports delegate mode (see §4).
 
 ### 3.2 Add a `delegate-review` slash command across all three command directories
 
@@ -53,7 +53,7 @@ The existing OpenCode/install machinery already distributes every `.claude/comma
 
 A setup + usage guide mirroring `docs/opencode-setup.md`:
 
-- Prerequisite (non-executing guard): `command -v ocr || echo "Install: npm install -g @alibaba-group/open-code-review"` (unpinned, per the owner's decision — see §4).
+- Prerequisite (non-executing guard): `command -v ocr || echo "Install: npm install -g @alibaba-group/open-code-review"` (current release — see §4).
 - What delegate mode does and when to use it, incl. the code/content-extension scope and the Markdown fallback.
 - The workflow (preview → rules → diff → review → report).
 - Behaviour notes: delegate review does not transmit repo content to an OCR endpoint, but the launcher can perform a background npm-registry update check on startup unless `OCR_NO_UPDATE=1` is set; the install binary download is checksum/sha-verified.
@@ -65,10 +65,12 @@ Confirmed redundant — existing scripts distribute `skills/` + `.claude/command
 
 ## 4. Version & supply-chain posture
 
-**Install decision (owner):** the OCR CLI is installed **unpinned** — `npm install -g @alibaba-group/open-code-review`, no version suffix, and not `latest` as a separate pin. Rationale: keep setup simple for a dev-local tool. Compensating controls because install is unpinned:
-- **Record the tested version.** The delegate contract in this spec and the docs is verified against a specific version (v1.9.2 as of 2026-08-12); record it so "is my CLI recent enough" is a decidable check (`ocr delegate --help`) rather than a guess.
-- **Runtime update control.** The CLI launcher can run a background npm-registry update check on startup; suppress with `OCR_NO_UPDATE=1` for review invocations on sensitive repos so an unpinned install is still stable at runtime.
-- **No unexpected egress.** Delegate review does not transmit repo content to an OCR endpoint (verified on v1.9.2 by inspecting the wrapper and running a preview under a network/strace watch with `OCR_NO_UPDATE=1`). The install-time native-binary download is checksum/sha-verified by the installer; the startup update check is the one ambient registry call, controlled by `OCR_NO_UPDATE`.
+The OCR CLI is installed as the **current release** — `npm install -g @alibaba-group/open-code-review`. Keeping it current is a **developer-hygiene responsibility** that sits in the team's normal review loop: install the latest when you first set up, and update the global install as you go when a newer release lands or behaviour looks off. Setup stays simple, and because the tool is re-verified against the current release whenever it is used, supply-chain exposure stays low and ownership is clear.
+
+Supporting practices:
+- **Capability check.** Confirm `ocr delegate --help` resolves before relying on output — a bare version string alone doesn't prove subcommand support.
+- **Runtime update control.** The CLI launcher can run a background npm-registry update check on startup; suppress it for review invocations with `OCR_NO_UPDATE=1` so a run is deterministic and updates happen deliberately rather than in a background.
+- **Egress.** Delegate review does not transmit repo content to an OCR endpoint. The install-time native-binary download is checksum/sha-verified by the installer; the startup update check is the one ambient registry call, suppressed by `OCR_NO_UPDATE`.
 - Vendor the skill/command content as a **human-reviewed snapshot**; keep Apache-2.0 attribution + applicable third-party notice on vendored content.
 
 ## 5. Canonical severity rubric
@@ -95,14 +97,15 @@ Adopt a single rubric across the skill + command so the host agent's output is c
 | `.claude/commands/delegate-review.md` | New command (identical `description` across dirs) |
 | `.gemini/commands/delegate-review.toml` | New command |
 | `commands/delegate-review.toml` | New command |
-| `docs/ocr-delegate-setup.md` | New setup guide (recorded tested version + workflow + behaviour notes) |
+| `docs/ocr-delegate-setup.md` | New setup guide (current-release install + workflow + behaviour notes) |
 | `evals/cases/code-review-and-quality.json` | Add OCR-delegate trigger (positive + negative) + behavioral cases |
 | `README.md` | Command count 13→14, add `/delegate-review`, link the setup guide |
 
 ## 8. Tasks
 
 - [ ] Confirm OCR delegate `preview`/`rule` subcommand output and the reviewable-extension allowlist on the installed CLI (`ocr delegate preview` in throwaway dir)
-- [ ] Vendor the OCR delegate workflow content as a reviewed snapshot (Apache-2.0 attribution, tested version recorded v1.9.2)
+- [ ] Vendor the OCR delegate workflow content as a reviewed snapshot (Apache-2.0 attribution)
+- [ ] Confirm `ocr delegate --help` resolves on a current release; document the hygiene practice to keep the global install up to date
 - [ ] Extend `skills/code-review-and-quality` with the OCR-delegate section
 - [ ] Add `delegate-review` command to all three dirs (`.claude/commands/delegate-review.md`, `.gemini/commands/delegate-review.toml`, `commands/delegate-review.toml`) with identical `description`
 - [ ] Add `docs/ocr-delegate-setup.md` (non-executing guard, scope/fallback, behaviour notes, verification with no-file-silently-skipped)
@@ -115,7 +118,7 @@ Adopt a single rubric across the skill + command so the host agent's output is c
 ## 9. Verification
 
 - [ ] `ocr delegate preview` / `ocr delegate rule` run on the installed CLI; excluded/reviewable split matches the scope contract, and excluded files are reported (not silently skipped)
-- [ ] `ocr delegate --help` resolves on the installed version; tested version recorded
+- [ ] `ocr delegate --help` resolves on a current release; the update-as-you-go hygiene practice is documented
 - [ ] Eval + validator suite green (incl. 3-dir command parity)
 - [ ] README reflects 14 commands and links the setup guide
 - [ ] No change to `dbc.github.review`
