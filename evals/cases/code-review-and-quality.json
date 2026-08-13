@@ -13,11 +13,23 @@
       {
         "prompt": "Can you review the changes another model just wrote for me?",
         "top_k": 3
+      },
+      {
+        "prompt": "Run an OCR delegate review on this diff",
+        "top_k": 3
+      },
+      {
+        "prompt": "Review the changed files using ocr delegate mode and the project review rules",
+        "top_k": 3
       }
     ],
     "negative": [
       {
         "prompt": "Deploy this to production now",
+        "owner": "shipping-and-launch"
+      },
+      {
+        "prompt": "Deploy the reviewed changes to production with a rollback strategy",
         "owner": "shipping-and-launch"
       },
       {
@@ -39,6 +51,18 @@
         "Every finding carries a severity label from the skill's taxonomy",
         "Security of user input is explicitly considered for the new endpoint",
         "The review leads with high-leverage findings rather than nits"
+      ]
+    },
+    {
+      "id": 2,
+      "kind": "dialogue",
+      "prompt": "The ocr CLI is not installed. You've been asked to run an OCR delegate review. Explain what you check and what you do.",
+      "expected_output": "A missing-CLI response that checks the prerequisite, directs installation without pretending to review, and explains the post-install preview, rules, per-file diff, review, and report sequence with folded nits",
+      "expectations": [
+        "The response checks for the ocr CLI with command -v ocr",
+        "Because the CLI is absent, the response directs installation rather than pretending to run the review",
+        "Once installed, the workflow proceeds in preview, rule resolution, per-file diff, review, and report order",
+        "Low-priority findings are represented by a Nits (folded): N count rather than silently dropped"
       ]
     }
   ]
