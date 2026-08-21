@@ -142,16 +142,18 @@ If a task is L or larger, it should be broken into smaller tasks. An agent perfo
 
 ## Output Files
 
-- **Plan document:** Save the implementation plan to `specs/<feature>/tasks/plan.md`. This is always a markdown file — design decisions, risks, and open questions don't map cleanly onto individual tracker issues.
+- **Plan document:** Save the implementation plan to `/specs/<feature>/tasks/plan.md`. This is always a markdown file — design decisions, risks, and open questions don't map cleanly onto individual tracker issues.
 - **Task list:** Record each task in the **task list target** (defined below).
 
-Where `<feature>` matches the spec's directory name (e.g. if the spec is at `specs/widget-7/SPEC.md`, the plan goes to `specs/widget-7/tasks/plan.md`). Create `specs/<feature>/tasks/` if it does not exist. If the spec is at the repo root (legacy `SPEC.md`), fall back to `tasks/plan.md` and `tasks/todo.md`.
+Where `<feature>` matches the spec's directory name (e.g. if the spec is at `/specs/widget-7/SPEC.md`, the plan goes to `/specs/widget-7/tasks/plan.md`). Create `/specs/<feature>/tasks/` if it does not exist. If the spec is at the repo root (legacy `SPEC.md`), fall back to `tasks/plan.md` and `tasks/todo.md`.
+
+**Path anchoring:** every `/specs/**` path is relative to the **repository root** — the leading `/` means repo root, never the current working directory or a package directory. In a monorepo, `specs/` sits next to the root config files, not nested (correct: `/specs/widget-7/tasks/plan.md`; wrong: `apps/specs/widget-7/tasks/plan.md`).
 
 ### Task List Target
 
 The task list target is where tasks and checkpoints are recorded. It is defined once, here; every other reference in this skill defers to it.
 
-- **Default: a checklist-style markdown file at `specs/<feature>/tasks/todo.md`** (or `tasks/todo.md` for legacy root specs). This is the convention the `/build` command and other downstream tooling expect. Use it unless the project says otherwise.
+- **Default: a checklist-style markdown file at `/specs/<feature>/tasks/todo.md`** (or `tasks/todo.md` for legacy root specs). This is the convention the `/build` command and other downstream tooling expect. Use it unless the project says otherwise.
 - **External tracker:** if the project's agent rules (`CLAUDE.md`, `AGENTS.md`, etc.) or the user designate an issue tracker (e.g. GitHub Issues, Jira, Linear, `bd`/beads), create one tracker item per task instead of writing `tasks/todo.md`. Map the Step 4 structure onto the tracker's fields: acceptance criteria and verification steps in the item body, dependencies via the tracker's linking mechanism (`bd dep add`, "blocked by", etc.). Record Step 5 checkpoints as tracker items too, or as a checklist in the plan document if the tracker has no natural equivalent.
 
 When using an external tracker, note it in the plan document (e.g. "Tasks tracked in Linear project FOO") so downstream steps and future sessions know where to look, and keep the plan document's Task List section as an ordered index of tracker item IDs or links rather than a duplicate checklist.

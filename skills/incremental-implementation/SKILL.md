@@ -207,7 +207,7 @@ After each increment, verify with the repository's own commands (see the test-dr
 - [ ] Linting passes (the repository's lint command)
 - [ ] The new functionality works as expected
 - [ ] The change is committed with a descriptive message
-- [ ] **Mark the task complete in the todo file** — edit `- [ ]` to `- [x]` for the task just completed in `specs/<feature>/tasks/todo.md` (or `tasks/todo.md` for legacy projects), update the plan's task status if the plan tracks status, and stage that file edit in the **same commit** as the code change. Never leave task-status updates for a separate "later" commit; every commit must be self-describing so the team can see which task it closed by looking at the diff.
+- [ ] **Mark the task complete in the todo file** — edit `- [ ]` to `- [x]` for the task just completed in `/specs/<feature>/tasks/todo.md` (or `tasks/todo.md` for legacy projects), update the plan's task status if the plan tracks status, and stage that file edit in the **same commit** as the code change. Never leave task-status updates for a separate "later" commit; every commit must be self-describing so the team can see which task it closed by looking at the diff.
 
 **Note:** Run each verification command after a change that could affect it. After a successful run, don't repeat the same command unless the code has changed since — re-running on unchanged code adds no information.
 

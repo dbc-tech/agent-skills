@@ -52,9 +52,9 @@ Resolves #42
 
 ## Artefacts
 
-- Spec: `specs/<feature>/SPEC.md`
-- Plan: `specs/<feature>/tasks/plan.md`
-- Todo: `specs/<feature>/tasks/todo.md`
+- Spec: `/specs/<feature>/SPEC.md`
+- Plan: `/specs/<feature>/tasks/plan.md`
+- Todo: `/specs/<feature>/tasks/todo.md`
 ```
 
 The `Resolves #<n>` line must be at the top of the body so GitHub reliably detects it.

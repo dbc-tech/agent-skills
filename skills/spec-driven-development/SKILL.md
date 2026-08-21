@@ -62,7 +62,7 @@ Build order: identity → billing, notifications → reporting
 
 **The map is gated like every phase.** The human reviews module boundaries, dependency direction, and build order before any module spec is written. Getting the map wrong is expensive; reviewing ten lines is not.
 
-**Then recurse per module.** Run Specify → Plan → Tasks → Implement for each module in dependency order. Each module gets its own spec, scoped to that module's objective, boundaries, and success criteria. Save the approved map in the feature's spec directory (`specs/<feature>/CAPABILITY-MAP.md`) and each module's spec alongside it, named by module id (`SPEC-identity.md`, `SPEC-billing.md`) — the map, not filename guessing, is the index of what exists.
+**Then recurse per module.** Run Specify → Plan → Tasks → Implement for each module in dependency order. Each module gets its own spec, scoped to that module's objective, boundaries, and success criteria. Save the approved map in the feature's spec directory (`/specs/<feature>/CAPABILITY-MAP.md`) and each module's spec alongside it, named by module id (`SPEC-identity.md`, `SPEC-billing.md`) — the map, not filename guessing, is the index of what exists.
 
 ### Phase 1: Specify
 
@@ -112,7 +112,9 @@ Don't silently fill in ambiguous requirements. The spec's entire purpose is to s
    - **Ask first:** Database schema changes, adding dependencies, changing CI config
    - **Never do:** Commit secrets, edit vendor directories, remove failing tests without approval
 
-**Output convention:** Save the spec to `specs/<feature>/SPEC.md`, where `<feature>` is the spec title kebab-cased (e.g. `# Spec: Widget 7` → `specs/widget-7/SPEC.md`). If the project has no existing `specs/` convention, fall back to `SPEC.md` at the repo root.
+**Output convention:** Save the spec to `/specs/<feature>/SPEC.md`, where `<feature>` is the spec title kebab-cased (e.g. `# Spec: Widget 7` → `/specs/widget-7/SPEC.md`). If the project has no existing `/specs/` convention, fall back to `SPEC.md` at the repo root.
+
+**Path anchoring:** every `/specs/**` path in this skill is relative to the **repository root** — the leading `/` means repo root, never the current working directory or a package directory. In a monorepo, `specs/` sits next to the root config files, not nested (correct: `/specs/widget-7/SPEC.md`; wrong: `apps/specs/widget-7/SPEC.md`).
 
 **Spec template:**
 
@@ -175,7 +177,7 @@ With the validated spec, generate a technical implementation plan:
 
 > Follow `planning-and-task-breakdown` for the dependency-graph mapping and vertical-slicing mechanics behind these steps; it is the canonical source. The bullets above are a lightweight summary; if they ever diverge, `planning-and-task-breakdown` takes precedence.
 >
-> **Output convention:** Save the plan to `specs/<feature>/tasks/plan.md` and record the task list in the task list target defined by `planning-and-task-breakdown` (default `specs/<feature>/tasks/todo.md`; projects may designate an external tracker instead), where `<feature>` matches the spec's directory name. Create `specs/<feature>/tasks/` if it does not exist. If the spec is at the repo root (legacy), fall back to `tasks/plan.md` and `tasks/todo.md`. Downstream commands (`/build`, etc.) expect these defaults.
+> **Output convention:** Save the plan to `/specs/<feature>/tasks/plan.md` and record the task list in the task list target defined by `planning-and-task-breakdown` (default `/specs/<feature>/tasks/todo.md`; projects may designate an external tracker instead), where `<feature>` matches the spec's directory name. Create `/specs/<feature>/tasks/` if it does not exist. If the spec is at the repo root (legacy), fall back to `tasks/plan.md` and `tasks/todo.md`. Downstream commands (`/build`, etc.) expect these defaults.
 
 The plan should be reviewable: the human should be able to read it and say "yes, that's the right approach" or "no, change X."
 
@@ -242,6 +244,6 @@ Before proceeding to implementation, confirm:
 - [ ] The human has reviewed and approved the spec
 - [ ] Success criteria are specific and testable
 - [ ] Boundaries (Always/Ask First/Never) are defined
-- [ ] The spec is saved to `specs/<feature>/SPEC.md` (or `SPEC.md` at the repo root for legacy projects)
+- [ ] The spec is saved to `/specs/<feature>/SPEC.md` (or `SPEC.md` at the repo root for legacy projects)
 - [ ] If the request bundles several independently testable capabilities, a capability map (module ids, dependency direction, build order) was approved before any module spec was written
 - [ ] Every module spec traces to a module id in the approved map
