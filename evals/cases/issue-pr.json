@@ -34,7 +34,7 @@
       "expected_output": "A pull request with Resolves #42 in the body, title derived from the issue, opened against the default branch",
       "expectations": [
         "The PR body contains Resolves #42 at the top",
-        "The PR title is derived from the issue title",
+        "The PR title is derived from the issue title and keeps the [BUILD] prefix",
         "The PR is opened against the repo's default branch",
         "The build label is applied to the PR",
         "The skill does not merge the PR",
