@@ -36,6 +36,7 @@
         "The PR body contains Resolves #42 at the top",
         "The PR title is derived from the issue title",
         "The PR is opened against the repo's default branch",
+        "The build label is applied to the PR",
         "The skill does not merge the PR",
         "The skill does not close the issue",
         "The PR URL is reported back to the user"
