@@ -11,7 +11,7 @@ Raise a pull request for the spec, plan, and todo files themselves — not the i
 
 ## When to Use
 
-- A spec/plan/todo has been written under `specs/<feature>/` and is ready for team review
+- A spec/plan/todo has been written under `/specs/<feature>/` and is ready for team review
 - You want to merge the specification via a PR before creating a build issue
 - You need a durable, reviewable record of the spec's acceptance
 
@@ -21,7 +21,7 @@ Raise a pull request for the spec, plan, and todo files themselves — not the i
 
 ### Step 1: Read the spec and derive the name
 
-Read the spec at `specs/<feature>/SPEC.md`. Kebab-case the text after `# Spec:` in the heading to derive `<name>`:
+Read the spec at `/specs/<feature>/SPEC.md`. Kebab-case the text after `# Spec:` in the heading to derive `<name>`:
 
 ```
 # Spec: Widget 7 new feature
@@ -58,9 +58,9 @@ Example body:
 
 ## Artifacts
 
-- Spec: `specs/<feature>/SPEC.md`
-- Plan: `specs/<feature>/tasks/plan.md`
-- Todo: `specs/<feature>/tasks/todo.md`
+- Spec: `/specs/<feature>/SPEC.md`
+- Plan: `/specs/<feature>/tasks/plan.md`
+- Todo: `/specs/<feature>/tasks/todo.md`
 
 ## Next steps
 

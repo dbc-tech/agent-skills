@@ -25,7 +25,7 @@ Verify `gh` is on `PATH`. If not, stop and tell the user — this skill requires
 
 ### Step 2: Read the spec and derive the name
 
-Read the spec at `specs/<feature>/SPEC.md`. Kebab-case the text after `# Spec:` in the heading to derive `<name>`:
+Read the spec at `/specs/<feature>/SPEC.md`. Kebab-case the text after `# Spec:` in the heading to derive `<name>`:
 
 ```
 # Spec: Widget 7 new feature
@@ -57,9 +57,9 @@ Example body:
 
 ## Artefacts
 
-- Spec: `specs/<feature>/SPEC.md`
-- Plan: `specs/<feature>/tasks/plan.md`
-- Todo: `specs/<feature>/tasks/todo.md`
+- Spec: `/specs/<feature>/SPEC.md`
+- Plan: `/specs/<feature>/tasks/plan.md`
+- Todo: `/specs/<feature>/tasks/todo.md`
 
 ## Next steps
 

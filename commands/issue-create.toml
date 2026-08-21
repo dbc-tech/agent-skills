@@ -3,7 +3,7 @@ description = "Open a GitHub Issue that summarises the merged spec and links to 
 prompt = """
 Invoke the issue-create skill.
 
-Read the merged spec at `specs/<feature>/SPEC.md`, kebab-case the text after `# Spec:` to
+Read the merged spec at `/specs/<feature>/SPEC.md`, kebab-case the text after `# Spec:` to
 derive `<name>`, ensure the `build` label exists (`gh label create build --force`), and open a
 GitHub Issue with `gh issue create --title "[BUILD] <name>" --label build --body-file <body>`
 where the body links to the spec, plan, and todo.

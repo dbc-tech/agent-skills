@@ -4,7 +4,7 @@ description: Break work into small verifiable tasks with acceptance criteria and
 
 Invoke the agent-skills:planning-and-task-breakdown skill.
 
-Read the existing spec (`specs/<feature>/SPEC.md` or `SPEC.md` at the repo root) and the relevant codebase sections. Then:
+Read the existing spec (`/specs/<feature>/SPEC.md` or `SPEC.md` at the repo root) and the relevant codebase sections. Then:
 
 1. Enter plan mode — read only, no code changes
 2. Identify the dependency graph between components
@@ -13,4 +13,4 @@ Read the existing spec (`specs/<feature>/SPEC.md` or `SPEC.md` at the repo root)
 5. Add checkpoints between phases
 6. Present the plan for human review
 
-Save the plan to `specs/<feature>/tasks/plan.md` and task list to `specs/<feature>/tasks/todo.md`, where `<feature>` matches the spec's directory name. If the spec is at the repo root (legacy), fall back to `tasks/plan.md` and `tasks/todo.md`.
+Save the plan to `/specs/<feature>/tasks/plan.md` and task list to `/specs/<feature>/tasks/todo.md` (both anchored at the repository root — the leading `/` is the repo root, never the current working directory), where `<feature>` matches the spec's directory name. If the spec is at the repo root (legacy), fall back to `tasks/plan.md` and `tasks/todo.md`.

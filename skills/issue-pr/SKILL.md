@@ -7,7 +7,7 @@ description: Raises a pull request for the implementation of a spec, linking it 
 
 ## Overview
 
-Raise a pull request for the implementation of a spec, linking it to the corresponding `[BUILD]` issue. The PR body references the issue with `Resolves #<n>` so GitHub automatically links the PR to the issue and closes the issue when the PR is merged. This skill does not merge the PR or close the issue — merging is a human action.
+Raise a pull request for the implementation of a spec, linking it to the corresponding `[BUILD]` issue. The PR body references the issue with `Resolves #<n>` so GitHub automatically links the PR to the issue and closes the issue when the PR is merged. The PR carries the `build` label, distinguishing implementation PRs from spec PRs (labelled `spec`) in GitHub's filter view. This skill does not merge the PR or close the issue — merging is a human action.
 
 ## When to Use
 
@@ -52,36 +52,41 @@ Resolves #42
 
 ## Artefacts
 
-- Spec: `specs/<feature>/SPEC.md`
-- Plan: `specs/<feature>/tasks/plan.md`
-- Todo: `specs/<feature>/tasks/todo.md`
+- Spec: `/specs/<feature>/SPEC.md`
+- Plan: `/specs/<feature>/tasks/plan.md`
+- Todo: `/specs/<feature>/tasks/todo.md`
 ```
 
 The `Resolves #<n>` line must be at the top of the body so GitHub reliably detects it.
 
 ### Step 5: Derive the PR title
 
-Derive the PR title from the issue title. The issue title is `[BUILD] <name>` — use `<name>` as the PR title (without the `[BUILD]` prefix, since this PR is for the implementation, not the build issue itself):
+Derive the PR title from the issue title, keeping the `[BUILD]` prefix so the PR is visually grouped with its build issue in listings and search (spec PRs use the `[SPEC]` prefix via `spec-pr`):
 
 ```
 Issue title: [BUILD] widget-7-new-feature
-PR title:    widget-7-new-feature
+PR title:    [BUILD] widget-7-new-feature
 ```
 
-Alternatively, accept a custom title from the user if they prefer a more descriptive PR title.
+Alternatively, accept a custom title from the user if they prefer a more descriptive PR title — prefix it with `[BUILD] ` too, so every implementation PR in this workflow is identifiable by its prefix.
 
-### Step 6: Create the PR
+### Step 6: Ensure the `build` label exists
+
+Run `gh label create build --force` to create the label if absent or update it if present. The `--force` flag makes this idempotent. This is the same label `issue-create` applies to build-tracking issues, so implementation PRs and their build issues filter together.
+
+### Step 7: Create the PR
 
 ```bash
 gh pr create \
   --title "<title>" \
   --body-file <body-file> \
-  --base <default-branch>
+  --base <default-branch> \
+  --label build
 ```
 
 Use `--title` and `--body-file` (never `--web` — skills must be scriptable). Write the body to a temporary file and pass it via `--body-file`.
 
-### Step 7: Report
+### Step 8: Report
 
 Report the PR URL back to the user. State explicitly that:
 - The PR has been opened but not merged — merging is a human action
@@ -95,6 +100,7 @@ Report the PR URL back to the user. State explicitly that:
 | "I don't need Resolves #<n>" | Without `Resolves #<n>`, GitHub won't link the PR to the issue. The issue would need to be closed manually after the PR merges. |
 | "I'll close the issue myself" | If `Resolves #<n>` is in the PR body, GitHub auto-closes the issue on merge. Let the convention work — don't close manually. |
 | "I'll use --web" | Skills must be scriptable. Use `--title` and `--body-file` so the PR creation is reproducible. |
+| "The PR doesn't need a label" | The `build` label distinguishes implementation PRs from spec PRs and other PRs in GitHub's filter view, and groups each PR with its build issue. |
 
 ## Red Flags
 
@@ -104,12 +110,15 @@ Report the PR URL back to the user. State explicitly that:
 - Omitting `Resolves #<n>` from the PR body (GitHub won't link the PR to the issue)
 - Putting `Resolves #<n>` anywhere but the top of the body (GitHub may not detect it)
 - Proceeding when `gh` is not on `PATH` without telling the user
+- Creating the PR without the `build` label
+- Stripping the `[BUILD]` prefix from the PR title (the prefix groups the PR with its build issue; spec PRs carry `[SPEC]`)
 
 ## Verification
 
 - [ ] The PR body contains `Resolves #<n>` at the top
-- [ ] The PR title is derived from the issue title (or a user-provided custom title)
+- [ ] The PR title is derived from the issue title and keeps the `[BUILD]` prefix (or a user-provided custom title, prefixed with `[BUILD] `)
 - [ ] The PR is opened against the repo's default branch
 - [ ] The skill reports the PR URL back to the user
 - [ ] The skill explicitly states it does not merge the PR or close the issue
+- [ ] The `build` label exists and is applied to the PR
 - [ ] The skill fails with a clear diagnostic when `gh` is not on `PATH`
