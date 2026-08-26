@@ -67,6 +67,20 @@
         "Any module spec produced is scoped to a single module rather than restating the whole initiative",
         "No implementation code is written"
       ]
+    },
+    {
+      "id": 3,
+      "kind": "dialogue",
+      "prompt": "The feature spec has been approved. Describe what the plan and implementation phases must record and do for pull request delivery.",
+      "expected_output": "The plan defines task-to-stack topology and implementation uses the official gh stack workflow",
+      "expectations": [
+        "The plan records each task's phase, stack, trunk, exact branch name, start condition, layer order, dependencies, parallel-safety, and checkpoints",
+        "One focused PR layer per task is the default",
+        "Sequential dependencies share an ordered stack and parallel-safe tasks use separate stacks",
+        "Exactly one final layer is designated to close the build issue",
+        "Implementation delegates stack setup and resume mechanics to incremental-implementation rather than duplicating them",
+        "Merge guidance requires checkpoints, acceptance criteria, checks, and reviews to pass"
+      ]
     }
   ]
 }

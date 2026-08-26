@@ -1,5 +1,5 @@
 ---
-description: Implement tasks incrementally — build, test, verify, commit. Add "auto" to run the whole plan in one approved pass.
+description: Implement tasks incrementally — build, test, verify, commit. Add "auto" to run approved unblocked tasks.
 ---
 
 Invoke the agent-skills:incremental-implementation skill alongside agent-skills:test-driven-development.
@@ -7,37 +7,38 @@ Invoke the agent-skills:incremental-implementation skill alongside agent-skills:
 ## Modes
 
 - **`/build`** — implement the *next* pending task, then stop (careful, one slice at a time).
-- **`/build auto`** — generate the plan if needed, get a single approval, then implement *every* task without stopping between them.
+- **`/build auto`** — generate the plan if needed, get one approval, then implement every currently unblocked task without routine per-task stops.
 
-`$ARGUMENTS` selects the mode. Treat `auto` (canonical) or `all` as autonomous mode; anything else (or empty) is the default single-task mode. Note: autonomous mode is not faster *per task* — it runs the same test-driven loop — it only removes the human stepping *between* tasks.
+`$ARGUMENTS` selects the mode. Treat `auto` (canonical) or `all` as autonomous mode; anything else (or empty) is the default single-task mode. Autonomous mode is not faster *per task*: it removes routine stepping between unblocked tasks, but still stops at planned merge checkpoints and blockers.
 
 ## Default: one task
 
 Pick the next pending task from the plan. Then:
 
-1. Read the task's acceptance criteria
-2. Load relevant context (existing code, patterns, types)
-3. Write a failing test for the expected behavior (RED)
-4. Implement the minimum code to pass the test (GREEN)
-5. Run the full test suite to check for regressions
-6. Run the build to verify compilation
-7. Commit the code and task-status update together: edit the task's `- [ ]` checkbox to `- [x]` in the todo file (`/specs/<feature>/tasks/todo.md` or `tasks/todo.md`), stage that file alongside the code files, and commit them in a single commit with a descriptive message. Every commit is self-describing — the diff shows which task it closed.
+1. Read the governing spec, plan, and task list. A spec-governed build requires a companion implementation plan; a task list alone is insufficient. Follow the **Spec-Driven Stack Setup** in agent-skills:incremental-implementation for exact branch checkout on resume, `gh stack init --base` for a new bottom layer, parent checkout before `gh stack add`, and cross-stack merge checkpoints. Small unspecced changes do not require an artificial stack.
+2. Read the task's acceptance criteria
+3. Load relevant context (existing code, patterns, types)
+4. Write a failing test for the expected behavior (RED)
+5. Implement the minimum code to pass the test (GREEN)
+6. Run the full test suite to check for regressions
+7. Run the build to verify compilation
+8. Commit the code and task-status update together: edit the task's `- [ ]` checkbox to `- [x]` in the todo file (`/specs/<feature>/tasks/todo.md` or `tasks/todo.md`), update the plan's task status if it tracks status, stage those edits alongside the code files, and commit them in a single commit with a descriptive message. Every commit is self-describing. For spec-governed work, verify order with `gh stack view --json` and the task branch tip with `git log -1 --oneline <task-branch>`.
 
-## Autonomous: the whole plan (`/build auto`)
+## Autonomous: approved unblocked work (`/build auto`)
 
-Use this once a spec exists and you want to collapse plan + build into one run. It removes the manual stepping between tasks — **not** the verification. Every task still earns a passing test and its own commit.
+Use this once a spec exists and you want to run approved work autonomously until the next required merge checkpoint. It removes routine stepping between unblocked tasks — **not** verification or dependency gates. Every task still earns a passing test and its own commit.
 
 1. **Require a spec.** Look for a spec at a known path: `/specs/**/SPEC.md` (preferred), or the deprecated fallbacks `SPEC.md` at the repo root, `docs/SPEC.md`, or a file under `spec/`. A README or arbitrary doc does **not** count. If none exists, stop and tell the user to run `/spec` first — do not invent requirements.
 2. **Establish a clean baseline.** Run `git status --porcelain`. If there are uncommitted changes outside the expected planning artifacts (`/specs/**/SPEC.md`, `/specs/**/tasks/plan.md`, `/specs/**/tasks/todo.md`, or the deprecated `SPEC.md`, `docs/SPEC.md`, `spec/*`, `tasks/plan.md`, `tasks/todo.md`), stop and ask the user to commit, stash, or confirm how to handle them. Autonomous per-task commits must not absorb unrelated local work, or the clean-rollback guarantee breaks.
-3. **Plan if needed.** If there is no plan (`/specs/**/tasks/plan.md` or `tasks/plan.md`), invoke agent-skills:planning-and-task-breakdown to generate one.
-4. **Single checkpoint.** Present the full plan and wait for an unambiguous affirmative (e.g. "approve", "go", "yes"). Treat hedged responses ("looks reasonable", "I guess") as **not** approved. This is the only human gate — after approval, run autonomously. If you generated `tasks/plan.md`, commit it as a single preparatory commit now so it doesn't bleed into the first task's commit.
-5. **Execute every task in dependency order.** Use each task's declared dependencies; if they aren't explicit, execute in the order the plan lists them. For each task, run the full default loop above (RED → GREEN → regression → build → commit). The commit must include the task-status update: edit the task's `- [ ]` checkbox to `- [x]` in the todo file (`/specs/<feature>/tasks/todo.md` or `tasks/todo.md`), update the plan's task status if the plan tracks status, stage that file alongside the code files, and commit them together — never `git add -A` blindly. Make one commit per task so any point is a clean rollback.
+3. **Plan if needed.** If there is no plan (`/specs/**/tasks/plan.md` or `tasks/plan.md`), invoke agent-skills:planning-and-task-breakdown to generate one. The Delivery Plan must map every spec-governed task to a stack, trunk, exact branch, start condition, layer, phase, dependencies, checkpoints, parallel-safety, and the single final layer that closes the build issue.
+4. **Approve and land new planning artefacts.** Present the full plan and wait for an unambiguous affirmative (e.g. "approve", "go", "yes"). Treat hedged responses ("looks reasonable", "I guess") as **not** approved. If this planning step generated or structurally changed the plan or task list and that planning commit is not already in the common planning trunk, create or check out a dedicated planning branch from that trunk before committing (`git switch -c <planning-branch> <planning-trunk>` for a new branch). Verify it contains no implementation commits, stage only the planning artefacts, commit them, stop, and tell the user to land them through `/spec-pr`. Never commit new planning artefacts directly on the trunk or an implementation layer. This gate does not apply to later task-status edits committed by the implementation loop.
+5. **Execute every currently unblocked task on its planned layer.** Before each task, including after resume, follow agent-skills:incremental-implementation's canonical stack setup: check out an existing task branch, or create a new branch from its exact planned parent/trunk. Run the full default loop above (RED → GREEN → regression → build → commit). Make one commit and one PR layer per task by default; combine tasks only when the approved plan requires it. Before creating any branch above a required review, partial-merge, or cross-stack checkpoint, stop, report the ready stacks for `/issue-pr`, and resume only after the checkpoint's start condition is satisfied.
 6. **Stop and ask the user** (do not push through) when:
    - a test can't be made to pass or the build breaks without an obvious fix → follow agent-skills:debugging-and-error-recovery
    - the spec is ambiguous, or a task needs a decision the spec doesn't cover
    - a task is high-risk or irreversible — auth/permission changes, destructive data migrations, payments, deletions, deploys, anything touching secrets, **or anything you can't undo with `git revert`** → follow agent-skills:doubt-driven-development and get explicit sign-off before continuing
 
-   After the user resolves a blocker, they re-invoke `/build auto` — it resumes from the next pending task.
-7. **Summarize at the end:** tasks completed, tests added, commits made, and anything skipped, flagged, or left for the user.
+   After the user resolves a blocker or required stacks merge, they re-invoke `/build auto`; canonical stack setup checks out the exact next task branch or parent before continuing.
+7. **Summarize at the end:** tasks completed, tests added, commits made, stack branches created, checkpoints reached, and anything skipped, flagged, or left for the user. Do not use `gh pr create` for stack members; `/issue-pr` submits completed stacks.
 
 If any step fails, follow the agent-skills:debugging-and-error-recovery skill.

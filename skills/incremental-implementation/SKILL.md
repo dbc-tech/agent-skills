@@ -18,6 +18,26 @@ Build in thin vertical slices — implement one piece, test it, verify it, then 
 
 **When NOT to use:** Single-file, single-function changes where the scope is already minimal.
 
+## Spec-Driven Stack Setup
+
+When implementation is governed by a `SPEC.md` and a companion implementation plan, use GitHub Stacked PRs. A task list without a plan does not contain enough branch topology; generate and approve the plan before implementation. Small changes without a spec do not require an artificial stack.
+
+Before implementation:
+
+1. Read the governing spec, plan, and task list. Treat the Delivery Plan's task dependencies, phases, checkpoints, stack names, exact branches, trunks, start conditions, and PR-layer grouping as authoritative.
+2. Run `gh stack --version`. If `gh` is unavailable, stop with the specific prerequisite error. If only the official extension is missing, stop, tell the user, and offer `gh extension install github/gh-stack`; install it only with their approval. If authentication or repository support fails, preserve the branches and stop with the diagnostic rather than silently changing delivery mode.
+3. Before every task, including after a resumed `/build auto`, run `git status --porcelain` and identify the task's exact branch from the Delivery Plan. Never infer the target stack from whichever branch happens to be checked out.
+4. If the task branch already exists in local stack tracking, resume with `gh stack checkout <task-branch>`. In a fresh clone or after local metadata loss, resolve its PR with `gh pr list --head <task-branch> --json number` and inspect `gh api repos/<owner>/<repo>/pulls/<pr-number> --jq '.stack'`. For a multi-layer remote Stack, recover with `gh stack checkout <pr-number>`. For a one-layer PR whose `.stack` is null, run `gh pr checkout <pr-number>` and reconstruct local tracking with `gh stack init --base <trunk-branch> <task-branch>`. If no PR exists yet, fetch the planned branches, verify their ancestry, and reconstruct local tracking with `gh stack init --base <trunk-branch> <ordered-branches...>`. Confirm the checked-out branch and stack order; do not create a duplicate layer.
+5. For a new bottom layer, verify that the declared trunk contains every prerequisite named by the stack's start condition. If work from another stack is not merged into that trunk, stop at the checkpoint and submit the ready stack instead. Otherwise run `gh stack init --base <trunk-branch> <task-branch>`.
+6. For a new dependent layer, first verify its start condition and any phase checkpoint. If a required review or partial merge has not completed, stop before creating the branch. Otherwise run `gh stack checkout <parent-task-branch>`, confirm from `gh stack view --json` that it is the top of the intended stack, then run `gh stack add <task-branch>`.
+7. Validate topology with `gh stack view --json` and validate the branch tip with `git log -1 --oneline <task-branch>`.
+
+Separate stacks cannot have multiple trunks. When a task depends on work from two stacks, both prerequisite checkpoints must merge into a common declared trunk before its stack starts. A newly generated plan must likewise be committed and merged into every planned trunk before independent implementation stacks are created.
+
+Local `gh stack` branches are ordinary linear Git branches. If remote Stack support is discovered to be unavailable during submission, preserve this topology so `issue-pr` can offer an explicitly approved regular-PR-chain exception without rebuilding the work.
+
+Use one focused PR layer per task by default. Combine tasks only when the approved plan says they must land together or neither can verify independently. If a task is too large for review, update the plan and split it into independently verifiable layers before continuing.
+
 ## The Increment Cycle
 
 ```
@@ -39,7 +59,7 @@ For each slice:
 2. **Test** — run the test suite (or write a test if none exists)
 3. **Verify** — confirm the slice works as expected (tests pass, build succeeds, manual check)
 4. **Commit** -- save your progress with a descriptive message (see `git-workflow-and-versioning` for atomic commit guidance)
-5. **Move to the next slice** — carry forward, don't restart
+5. **Move to the next slice** — for spec-governed work, create or check out the next planned stack layer before editing it; otherwise carry forward without restarting
 
 ## Slicing Strategies
 
@@ -140,6 +160,8 @@ Each increment changes one logical thing. Don't mix concerns:
 
 **Good:** Three separate commits — one for each change.
 
+For spec-governed work, the task boundary is also the default PR-layer boundary. Do not put the next task's commit on the current task branch and plan to separate it later.
+
 ### Rule 2: Keep It Compilable
 
 After each increment, the project must build and existing tests must pass. Don't leave the codebase in a broken state between slices.
@@ -208,6 +230,7 @@ After each increment, verify with the repository's own commands (see the test-dr
 - [ ] The new functionality works as expected
 - [ ] The change is committed with a descriptive message
 - [ ] **Mark the task complete in the todo file** — edit `- [ ]` to `- [x]` for the task just completed in `/specs/<feature>/tasks/todo.md` (or `tasks/todo.md` for legacy projects), update the plan's task status if the plan tracks status, and stage that file edit in the **same commit** as the code change. Never leave task-status updates for a separate "later" commit; every commit must be self-describing so the team can see which task it closed by looking at the diff.
+- [ ] For spec-governed work, `gh stack view --json` shows the planned branch order and `git log -1 --oneline <task-branch>` shows the task commit at the branch tip
 
 **Note:** Run each verification command after a change that could affect it. After a successful run, don't repeat the same command unless the code has changed since — re-running on unchanged code adds no information.
 
@@ -221,6 +244,10 @@ After each increment, verify with the repository's own commands (see the test-dr
 | "I'll add the feature flag later" | If the feature isn't complete, it shouldn't be user-visible. Add the flag now. |
 | "This refactor is small enough to include" | Refactors mixed with features make both harder to review and debug. Separate them. |
 | "Let me run the build command again just to be sure" | After a successful run, repeating the same command adds nothing unless the code has changed since. Run it again after subsequent edits, not as reassurance. |
+| "We can split this into PRs at the end" | Retrofitting branch boundaries is avoidable rework. Create each planned stack layer before implementing its task. |
+| "Parallel tasks can share one stack" | A stack declares dependency. Parallel-safe tasks belong in separate stacks unless the plan records a real ordering constraint. |
+| "Resume from the branch I'm already on" | The current branch may belong to another stack. Resume by checking out the exact planned task branch or its planned parent. |
+| "The integration stack can depend on two feature branches" | A stack has one trunk. Merge both prerequisite checkpoints into their common trunk before initializing the integration stack. |
 
 ## Red Flags
 
@@ -234,6 +261,11 @@ After each increment, verify with the repository's own commands (see the test-dr
 - Touching files outside the task scope "while I'm here"
 - Creating new utility files for one-time operations
 - Running the same build/test command twice in a row without any intervening code change
+- Implementing multiple planned tasks on one stack layer without approved grouping
+- Using `gh pr create` for a spec-governed stack member
+- Adding parallel-safe work above an unrelated stack layer
+- Running `gh stack add` without first checking out and validating the planned parent branch
+- Initializing a stack before its cross-stack prerequisites are merged into its declared trunk
 
 ## Verification
 
@@ -244,6 +276,8 @@ After completing all increments for a task:
 - [ ] The build is clean
 - [ ] The feature works end-to-end as specified
 - [ ] No uncommitted changes remain
+- [ ] Each spec-governed task is on its planned stack layer
+- [ ] `gh stack view --json` matches the plan's dependency and phase order
 
 ## See Also
 

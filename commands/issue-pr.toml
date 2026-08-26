@@ -1,12 +1,14 @@
-description = "Raise a pull request for the implementation, linked to the build issue via Resolves #<n>"
+description = "Submit implementation PRs linked to a build issue, using stacked PRs for spec-governed work"
 
 prompt = """
 Invoke the issue-pr skill.
 
 The argument is the issue number (e.g. `/issue-pr 42`). Fetch the issue with `gh issue view
-<n> --json title,body`, compose a PR body with `Resolves #<n>` at the top, derive the PR title
-from the issue title keeping the `[BUILD]` prefix (custom titles get the prefix too), ensure
-the `build` label exists (`gh label create build --force`), and
-open a PR with `gh pr create --title <title> --body-file <body> --base <default-branch>
---label build`. Do not merge the PR or close the issue.
+<n> --json title,body` and resolve its spec, plan, and task list. For spec-governed work,
+validate the plan's topology for the completed stacks at the current checkpoint, ensure the
+official `gh stack` extension is available, move existing ready PRs to draft, submit new PRs
+with `gh stack submit --auto`, apply and verify metadata and remote Stack membership, then
+mark drafts ready. Use `Resolves #<n>` only when the full plan is complete. Use `gh pr create` only
+for a small unspecced standalone change or an explicitly approved unsupported-repository
+exception. Do not merge PRs or close the issue directly.
 """

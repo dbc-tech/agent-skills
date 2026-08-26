@@ -174,10 +174,13 @@ With the validated spec, generate a technical implementation plan:
 3. Note risks and mitigation strategies
 4. Identify what can be built in parallel vs. what must be sequential
 5. Define verification checkpoints between phases
+6. Map tasks to stacked-PR layers, stacks, and phase or merge boundaries
 
 > Follow `planning-and-task-breakdown` for the dependency-graph mapping and vertical-slicing mechanics behind these steps; it is the canonical source. The bullets above are a lightweight summary; if they ever diverge, `planning-and-task-breakdown` takes precedence.
 >
 > **Output convention:** Save the plan to `/specs/<feature>/tasks/plan.md` and record the task list in the task list target defined by `planning-and-task-breakdown` (default `/specs/<feature>/tasks/todo.md`; projects may designate an external tracker instead), where `<feature>` matches the spec's directory name. Create `/specs/<feature>/tasks/` if it does not exist. If the spec is at the repo root (legacy), fall back to `tasks/plan.md` and `tasks/todo.md`. Downstream commands (`/build`, etc.) expect these defaults.
+
+Because this workflow is governed by a spec and companion plan, implementation uses GitHub Stacked PRs. The plan must include a Delivery Plan that records each task's phase, stack, trunk, exact branch name, start condition, layer order, dependencies, parallel-safety, checkpoints, and the single final layer that will close the build issue. Small changes outside this spec workflow do not require an artificial stack.
 
 The plan should be reviewable: the human should be able to read it and say "yes, that's the right approach" or "no, change X."
 
@@ -190,6 +193,8 @@ Break the plan into discrete, implementable tasks:
 - Each task includes a verification step (test, build, manual check)
 - Tasks are ordered by dependency, not by perceived importance
 - No task should require changing more than ~5 files
+- Each task maps to one focused PR layer by default
+- Tasks that must land together are explicitly grouped; parallel-safe tasks use separate stacks
 
 > Follow `planning-and-task-breakdown` for the full task-sizing and dependency-ordering mechanics; it is the canonical source. The template below is a lightweight inline form; if they ever diverge, `planning-and-task-breakdown` takes precedence.
 
@@ -204,6 +209,8 @@ Break the plan into discrete, implementable tasks:
 ### Phase 4: Implement
 
 Execute tasks one at a time following `skills/incremental-implementation/SKILL.md` (`incremental-implementation`) and `skills/test-driven-development/SKILL.md` (`test-driven-development`). Use `skills/context-engineering/SKILL.md` (`context-engineering`) to load the right spec sections and source files at each step rather than flooding the agent with the entire spec.
+
+`incremental-implementation` is the canonical source for stack setup, resume, trunk, and checkpoint mechanics. Submit completed layers through `issue-pr`. Do not duplicate or improvise those commands here.
 
 ## Keeping the Spec Alive
 
@@ -225,6 +232,8 @@ The spec is a living document, not a one-time artifact:
 | "The user knows what they want" | Even clear requests have implicit assumptions. The spec surfaces those assumptions. |
 | "It's one big feature; splitting it is overhead" | If acceptance criteria cluster into independently testable groups, a monolithic spec forces every downstream task to reason over the whole contract. A ten-line capability map is the cheap alternative. |
 | "I'll decompose during planning" | Planning slices tasks within a spec. By then the oversized artifact already exists — module boundaries and dependency direction must be decided before the spec is written, not after. |
+| "We can decide the PR split after implementation" | The task dependency graph already defines reviewable delivery boundaries. Retrofitting branches after coding creates avoidable rebase and review work. |
+| "Parallel work can share one stack" | A stack declares dependency. Parallel-safe tasks use separate stacks unless the plan records a real ordering constraint. |
 
 ## Red Flags
 
@@ -235,6 +244,9 @@ The spec is a living document, not a one-time artifact:
 - Skipping the spec because "it's obvious what to build"
 - One spec whose requirements span several independently testable capabilities
 - Module boundaries or build order decided implicitly during implementation because no capability map was approved up front
+- A spec-governed plan without an explicit stacked-PR Delivery Plan
+- Multiple planned tasks implemented on one branch without approved grouping
+- Using `gh pr create` or `gh pr merge` for stack members
 
 ## Verification
 
@@ -247,3 +259,7 @@ Before proceeding to implementation, confirm:
 - [ ] The spec is saved to `/specs/<feature>/SPEC.md` (or `SPEC.md` at the repo root for legacy projects)
 - [ ] If the request bundles several independently testable capabilities, a capability map (module ids, dependency direction, build order) was approved before any module spec was written
 - [ ] Every module spec traces to a module id in the approved map
+- [ ] The implementation plan maps every task to a phase, stack, trunk, exact branch name, start condition, and PR layer
+- [ ] Sequential dependencies and parallel-safe tasks are represented accurately in the stack topology
+- [ ] Exactly one final layer is designated to close the build issue
+- [ ] The implementation workflow uses `gh stack` for creation, submission, synchronization, and merge guidance

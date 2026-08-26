@@ -52,6 +52,22 @@
         "The work is decomposed into independently useful vertical slices",
         "Verification is required before each slice is committed"
       ]
+    },
+    {
+      "id": 3,
+      "kind": "dialogue",
+      "prompt": "This feature has an approved SPEC.md and Delivery Plan. Task 1 blocks Task 2, while Task 3 is marked parallel-safe on its own stack. Explain initial setup and how a resumed run selects the next branch.",
+      "expected_output": "The agent checks gh stack, uses each stack's declared trunk and branches, and resumes by checking out the exact planned branch or parent",
+      "expectations": [
+        "The official gh stack extension is checked before implementation and installation requires user approval if it is missing",
+        "Task 1 is initialized with gh stack init --base using its declared trunk and Task 2 is added only after checking out its planned parent",
+        "Task 3 starts a separate stack from its declared trunk rather than being given a false dependency",
+        "A resumed run checks out an existing task branch or the planned parent instead of using whichever stack is currently active",
+        "A fresh-clone resume resolves a PR number to recover remote stack tracking, with gh pr checkout plus gh stack init for a one-layer PR whose remote stack object is null",
+        "Cross-stack dependencies must be merged into one common trunk before a dependent stack starts",
+        "One focused PR layer per task is the default",
+        "The agent does not propose gh pr create for stack members"
+      ]
     }
   ]
 }

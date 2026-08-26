@@ -29,7 +29,7 @@
     {
       "id": 1,
       "prompt": "Break the attached notifications spec into an executable plan.",
-      "expected_output": "Ordered tasks in tasks/plan.md, each small, verifiable, with acceptance criteria and dependencies",
+      "expected_output": "Ordered tasks in /specs/notifications/tasks/plan.md, each small and verifiable, with acceptance criteria, dependencies, and an explicit stacked-PR Delivery Plan",
       "files": [
         "planning-and-task-breakdown"
       ],
@@ -37,6 +37,11 @@
         "Every task has acceptance criteria",
         "Tasks are ordered by dependency",
         "Tasks are vertical slices rather than horizontal layers",
+        "The plan maps every task to a phase, stack, exact trunk, branch name, start condition, and PR layer",
+        "The repository default branch is detected and used as the common planning trunk unless another trunk is explicitly approved",
+        "Sequential dependencies stay in stack order while parallel-safe tasks are assigned to separate stacks",
+        "A stack with cross-stack dependencies starts only after those checkpoints merge into its single declared trunk",
+        "Exactly one final layer is designated to close the future build issue",
         "No implementation code is written during planning"
       ]
     }

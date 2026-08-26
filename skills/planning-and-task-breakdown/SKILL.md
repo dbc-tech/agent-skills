@@ -54,6 +54,8 @@ Database schema
 
 Implementation order follows the dependency graph bottom-up: build foundations first.
 
+For work governed by a spec, also map the delivery graph. Record which phase and stack each task belongs to, its exact branch name, the layer order within each stack, and which tasks are parallel-safe. The implementation workflow treats this mapping as authoritative rather than inventing branch dependencies while coding.
+
 ### Step 3: Slice Vertically
 
 Instead of building all the database, then all the API, then all the UI — build one complete feature path at a time:
@@ -111,6 +113,7 @@ Arrange tasks so that:
 2. Each task leaves the system in a working state
 3. Verification checkpoints occur after every 2-3 tasks
 4. High-risk tasks are early (fail fast)
+5. Spec-governed tasks have an explicit stacked-PR delivery order
 
 Add explicit checkpoints to the task list target:
 
@@ -121,6 +124,38 @@ Add explicit checkpoints to the task list target:
 - [ ] Core user flow works end-to-end
 - [ ] Review with human before proceeding
 ```
+
+### Stacked PR Delivery
+
+Work governed by a spec and companion implementation plan uses GitHub Stacked PRs. Small changes without a spec do not need an artificial stack.
+
+- Use one focused PR layer per task by default.
+- Combine tasks in one layer only when they must land together or neither task can satisfy its verification independently.
+- Split an oversized task into additional layers only when every resulting layer is independently reviewable and leaves the repository working.
+- Put sequential dependencies in one stack in dependency order.
+- Put parallel-safe tasks in separate stacks instead of inventing dependencies between them.
+- Use phases as stack boundaries or partial-merge boundaries, and make every phase checkpoint explicit.
+- Detect the repository default branch with `gh repo view --json defaultBranchRef --jq .defaultBranchRef.name` and use it as the common planning trunk unless the user explicitly approves another trunk.
+- Record one exact trunk for every stack. This is the branch passed to `gh stack init --base`.
+- If a stack depends on work from another stack, its start condition must require those checkpoints to merge into its trunk first. A stack cannot have two trunks.
+- Designate exactly one final layer to close the build issue after all required stacks and checkpoints are complete. Other layers reference the issue without closing it.
+
+Record the topology in the plan:
+
+```markdown
+## Delivery Plan
+
+| Task | Phase | Stack | Trunk | Branch | Layer | Starts after | Depends on | Parallel-safe | Closes build issue |
+|---|---|---|---|---|---|---|---|---|---|
+| Task 1 | Foundation | auth | `main` | `feature/task-1-auth-model` | 1 (bottom) | Plan merged to `main` | None | No | No |
+| Task 2 | Foundation | auth | `main` | `feature/task-2-auth-api` | 2 | Task 1 committed | Task 1 | No | No |
+| Task 3 | Docs | docs | `main` | `feature/task-3-auth-docs` | 1 (bottom) | Plan merged to `main` | None | Yes | No |
+| Task 4 | Integration | integration | `main` | `feature/task-4-auth-integration` | 1 (bottom) | Auth and docs checkpoints merged to `main` | Tasks 2, 3 | No | Yes |
+```
+
+If no build issue exists yet, `Closes build issue` still identifies the future closing layer; the issue number is supplied later by `issue-pr`.
+
+All stacks in one Delivery Plan should normally share the detected common trunk. If a user explicitly requires a different trunk for one stack, its start condition must also state how the approved spec and planning commits reach that trunk before implementation starts.
 
 ## Task Sizing Guidelines
 
@@ -194,6 +229,13 @@ When using an external tracker, note it in the plan document (e.g. "Tasks tracke
 - [ ] All acceptance criteria met
 - [ ] Ready for review
 
+## Delivery Plan
+
+| Task | Phase | Stack | Trunk | Branch | Layer | Starts after | Depends on | Parallel-safe | Closes build issue |
+|---|---|---|---|---|---|---|---|---|---|
+| Task 1 | Foundation | [stack-name] | `[trunk-branch]` | `[task-branch]` | 1 (bottom) | [start condition] | None | No | No |
+| Task N | Complete | [stack-name] | `[trunk-branch]` | `[task-branch]` | N (top) | Task N-1 committed | Task N-1 | No | Yes |
+
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -213,6 +255,8 @@ When multiple agents or sessions are available:
 - **Must be sequential:** Database migrations, shared state changes, dependency chains
 - **Needs coordination:** Features that share an API contract (define the contract first, then parallelize)
 
+Represent safe parallel work as separate stacks in the Delivery Plan. Never place one parallel-safe task on top of another merely to keep all work in one stack.
+
 ## Common Rationalizations
 
 | Rationalization | Reality |
@@ -221,6 +265,7 @@ When multiple agents or sessions are available:
 | "The tasks are obvious" | Write them down anyway. Explicit tasks surface hidden dependencies and forgotten edge cases. |
 | "Planning is overhead" | Planning is the task. Implementation without a plan is just typing. |
 | "I can hold it all in my head" | Context windows are finite. Written plans survive session boundaries and compaction. |
+| "We can decide the PR split after coding" | Branch dependencies become expensive to untangle after commits exist. Plan stack and layer boundaries with the task graph. |
 
 ## Red Flags
 
@@ -231,6 +276,9 @@ When multiple agents or sessions are available:
 - All tasks are XL-sized
 - No checkpoints between tasks
 - Dependency order isn't considered
+- Spec-governed work has no Delivery Plan or PR-layer mapping
+- Parallel-safe tasks are forced into one stack without a real dependency
+- More than one layer is marked to close the build issue
 
 ## Verification
 
@@ -242,6 +290,9 @@ Before starting implementation, confirm:
 - [ ] Tasks are recorded in the task list target (default `tasks/todo.md`)
 - [ ] No task touches more than ~5 files
 - [ ] Checkpoints exist between major phases
+- [ ] Spec-governed tasks map to explicit stacks, trunks, branch names, start conditions, and PR layers
+- [ ] Parallel-safe tasks use separate stacks where appropriate
+- [ ] Exactly one final layer is designated to close the future build issue
 - [ ] The human has reviewed and approved the plan
 
 ## See Also

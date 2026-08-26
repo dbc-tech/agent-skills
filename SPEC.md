@@ -1,5 +1,7 @@
 # Spec: Issue-Driven Build Workflow + OpenCode Installer
 
+> **Living-spec amendment:** Spec-governed implementation is now delivered through GitHub Stacked PRs. The Delivery Plan defines stack trunks, branches, start conditions, layers, dependencies, and checkpoints. This amendment supersedes the original single-implementation-PR assumptions below: intermediate layers reference the build issue, exactly one final layer resolves it, and `issue-pr` uses the official `github/gh-stack` extension where supported.
+
 ## Objective
 
 Extend the **agent-skills** framework itself (the `dbc-tech/agent-skills` repo) so that spec → plan → build → PR can be driven from a **GitHub Issue**, and so that the framework can be installed into OpenCode with a single script and a tested setup guide.
@@ -30,15 +32,15 @@ This spec closes that loop:
 3. `issue-list` lists all open issues whose title starts with `[BUILD] `.
 4. `issue-build <issue-number>` resolves the spec/plan/todo from the issue (links first,
    `[BUILD] <name>` fallback), then chains the existing `/build` command sequence.
-5. `issue-pr <issue-number>` is invoked at the end of development to raise a pull request
-   based on the linked issue; the PR body references the issue so GitHub links them.
+5. `issue-pr <issue-number>` submits completed implementation stacks for review. Every layer
+   references the linked issue, and exactly one final layer resolves it.
 
 ### Target users
 
 - **Developers** using agent-skills with the GitHub CLI installed who want a traceable,
   reviewable, issue-driven path from spec to implementation to pull request.
 - **Teams** reviewing specs in PRs who want a single GitHub Issue to track the build that
-  realises each merged spec, and a single PR that links back to it.
+  realises each merged spec and focused stacked PR layers that link back to it.
 
 ### Naming convention (binding)
 
@@ -71,10 +73,10 @@ difference.
    issue `#<n>`. Link resolution: parse the issue body for markdown links to
    `specs/<feature>/SPEC.md` etc.; if missing, derive `<feature>` from the `[BUILD] <name>`
    issue title and look under `specs/<name>/`.
-4. `issue-pr <n>` raises a pull request whose body references issue `#<n>` (so GitHub links
-   the PR to the issue) and summarises the work done against the spec/plan/todo. The PR is
-   opened against the repo's default branch from the current branch (or a branch the user
-   has prepared). It does not auto-close the issue — merging is a human action.
+4. `issue-pr <n>` submits the implementation stacks defined by the Delivery Plan. Every PR
+   body references issue `#<n>` and summarises its task, phase, dependencies, acceptance
+   criteria, and verification. Non-closing layers use `Part of`; exactly one final layer
+   uses `Resolves`. Submission does not merge PRs or close the issue directly.
 5. `spec-pr` raises a pull request for the **spec/plan/tasks themselves** (not the
    implementation). The PR title is `[SPEC] <name>` where `<name>` is the kebab-cased
    text after `# Spec:`. The PR body references the spec, plan, and todo files. The PR is
@@ -113,12 +115,13 @@ difference.
 |---|---|
 | Skill / command format | Markdown with YAML frontmatter (TOML body for `commands/*.toml` and `.gemini/commands/*.toml`) |
 | Installer / updater | POSIX `sh` + coreutils (no Node dependency for the scripts themselves) |
-| GitHub integration | `gh` CLI (v2.45.0 verified on this machine) — `gh issue create`, `gh issue list`, `gh issue view`, `gh label create`, `gh pr create` |
+| GitHub integration | `gh` CLI plus the official `github/gh-stack` extension for spec-governed implementation; standard `gh pr create` remains for spec PRs and small unspecced changes |
 | Validation | Existing Node.js scripts in `scripts/` (`validate-skills.js`, `validate-commands.js`) + `scripts/lib/skill-lint.js` |
 
-No new runtime dependencies. `gh` is a prerequisite for `issue-create` / `issue-list` /
-`issue-build` / `issue-pr` / `spec-pr`; the installer, updater, and other skills remain
-`gh`-free.
+`gh` is a prerequisite for `issue-create` / `issue-list` / `issue-build` / `issue-pr` /
+`spec-pr`. Spec-governed build and submission additionally require repository support for
+GitHub Stacked PRs and the official `github/gh-stack` extension. Skills stop and ask before
+installing the extension; the installer, updater, and unrelated skills remain `gh`-free.
 
 ---
 
@@ -133,8 +136,9 @@ Slash commands live in three sibling directories and MUST stay in parity (enforc
 | `commands/*.toml` | TOML (Antigravity) | Antigravity CLI |
 | `.gemini/commands/*.toml` | TOML | Gemini CLI |
 
-Existing commands (do not change behaviour, only the `specs/<feature>/` output paths for
-`/spec` and `/plan`, and add `issue-build` to the path-resolution list in `/build`):
+Core commands remain available under the same names. The living-spec amendment also changes
+`/build` and `/issue-build` to honor Delivery Plan trunks, branches, resume behavior, and
+cross-stack checkpoints:
 
 ```
 /spec, /plan, /build, /test, /review, /webperf, /code-simplify, /ship
@@ -147,7 +151,7 @@ New commands (added in all three dirs with identical `description` field):
 /issue-create                       # read merged spec, open [BUILD] <name> issue with body links + build label
 /issue-list                         # list open issues whose title starts with "[BUILD] "
 /issue-build <n>                    # chain /build onto spec linked from issue #<n>
-/issue-pr <n>                       # raise a pull request linked to issue #<n>, summarising the work
+/issue-pr <n>                       # submit implementation stacks linked to issue #<n>
 ```
 
 Validation commands (run before every PR):
@@ -233,10 +237,12 @@ workflows (branch/commit hygiene, PR body composition, issue/PR linkage conventi
 |---|---|
 | `commands/spec.toml` (and `.claude/commands/spec.md`, `.gemini/commands/spec.toml`) | Update the Save-the-spec instruction: `specs/<feature>/SPEC.md` instead of `SPEC.md`. Derive `<feature>` from the `# Spec: <feature>` heading, kebab-cased. |
 | `commands/planning.toml` (and siblings) | Update the Save instructions: `specs/<feature>/tasks/plan.md` and `specs/<feature>/tasks/todo.md` instead of `tasks/plan.md` / `tasks/todo.md`. |
-| `commands/build.toml` (and siblings) | Extend the "known spec paths" list with `specs/**/SPEC.md`. Keep repo-root `SPEC.md`, `docs/SPEC.md`, `spec/` as deprecated fallbacks. Planning-artefact glob extends to `specs/**/tasks/plan.md`. **Also:** rewrite step 8 ("Mark the task complete and stop") and auto step 5 ("commit → mark complete") so that marking is an explicit file edit (change `- [ ]` to `- [x]` in the todo file) staged in the **same** commit as the code, not a mental note or a separate post-commit step. Single-task step 7 ("Commit") and step 8 ("Mark complete") become a single combined step: "Stage code + todo-file checkbox edit, commit together." |
-| `skills/spec-driven-development/SKILL.md` | Update Phase 1 ("Specify") and Phase 2 ("Plan") output-path references to `specs/<feature>/`. Update the verification checklist. |
-| `skills/planning-and-task-breakdown/SKILL.md` | Update "Output Files" section: `specs/<feature>/tasks/plan.md` and `specs/<feature>/tasks/todo.md`. |
-| `skills/incremental-implementation/SKILL.md` | Add an explicit "Mark the task complete" step to the Increment Checklist that names the file (`specs/<feature>/tasks/todo.md` or `tasks/todo.md`), the edit (`- [ ]` → `- [x]`), and the requirement to stage it in the same commit. The `/build` command carries the path-resolution update. |
+| `commands/build.toml` (and siblings) | Resolve modern spec paths, keep deprecated fallbacks, update task status in the implementation commit, and follow the Delivery Plan's exact trunk, branch, resume, and checkpoint rules. Auto mode runs currently unblocked tasks and stops at cross-stack merge checkpoints. |
+| `commands/issue-build.toml` (and siblings) | Resolve issue-linked artefacts, then delegate to the complete `/build auto` workflow without maintaining an abbreviated build loop. |
+| `skills/spec-driven-development/SKILL.md` | Define stacked delivery as the spec-governed invariant and delegate implementation mechanics to the canonical incremental skill. |
+| `skills/planning-and-task-breakdown/SKILL.md` | Write `specs/<feature>/tasks/` artefacts and include a Delivery Plan with the common trunk, exact branches, layers, start conditions, dependencies, and checkpoints. |
+| `skills/incremental-implementation/SKILL.md` | Own canonical stack setup and resume mechanics, including `gh stack init --base`, exact parent checkout, fresh-clone recovery, and cross-stack merge gates. |
+| `skills/issue-pr/SKILL.md` | Submit completed stacks at reached checkpoints, keep PRs draft during metadata edits, verify remote Stack membership, and use PR-number-qualified partial merges. |
 | Anywhere "CLAUDE.md" is referenced alone | Replace with "AGENTS.md and CLAUDE.md" and add: "prefer `AGENTS.md` when both exist." Sites include `AGENTS.md`, `CLAUDE.md`, skills, commands, and `docs/`. |
 
 ---
@@ -520,14 +526,15 @@ skill has its required eval case file." That bar is non-negotiable for merge.
   (`gh label create build --force` — `--force` makes it idempotent).
 - Ensure the `spec` label exists on the repo before the labelled spec PR is created
   (`gh label create spec --force` — `--force` makes it idempotent).
-- Raise an implementation PR via `issue-pr` whose body references the build issue
-  (`Resolves #<n>` or `Implements #<n>`) so GitHub links the PR to the issue.
+- Submit implementation stacks via `issue-pr`. Every layer references the build issue;
+  non-closing layers use `Part of #<n>` and exactly one final layer uses `Resolves #<n>`.
 - List **both** `AGENTS.md` and `CLAUDE.md` whenever referencing the agent-rules file;
   instruct preferring `AGENTS.md` when both exist.
 - Use `set -e`, `#!/bin/bash`, stderr-for-humans / stdout-for-machines in any new
   `scripts/*.sh`, matching the `docs/skill-anatomy.md` "Script Requirements" section.
-- Run `gh issue create` and `gh pr create` with `--title` and `--body-file` (never `--web`
-  from a skill — skills must be scriptable).
+- Run `gh issue create`, standalone `gh pr create`, and post-submit `gh pr edit` with
+  explicit titles and `--body-file` (never `--web` from a skill — skills must be scriptable).
+  Submit supported stacks as drafts, apply and verify metadata, then mark them ready.
 - **Mark completed tasks in the todo file (and plan, if it tracks status) as part of the
   same commit as the code change** — edit `- [ ]` to `- [x]`, stage that file alongside the
   code, commit together. Never leave task-status updates for a separate "later" commit;
@@ -540,9 +547,8 @@ skill has its required eval case file." That bar is non-negotiable for merge.
 - Changing the `[BUILD] ` / `[SPEC] ` title prefixes, the `build` / `spec` label names, or
   the `specs/<feature>/` directory layout (downstream consumers will have open issues/PRs
   using the current convention).
-- Adding a new dependency (none expected; `gh` is the only new prerequisite, and only for
-  the five new `gh`-dependent commands (`spec-pr`, `issue-create`, `issue-list`,
-  `issue-build`, `issue-pr`)).
+- Adding a new dependency beyond `gh` and the official `github/gh-stack` extension used by
+  spec-governed build and submission.
 - Editing `plugin.json` version or `marketplace.json` (also covered by
   `validate-versions.js`).
 - Changing the install script's behaviour to overwrite an existing `AGENTS.md` (currently
@@ -554,8 +560,8 @@ skill has its required eval case file." That bar is non-negotiable for merge.
 
 ### Never do
 
-- Never auto-push commits, auto-merge PRs, or auto-close issues from a skill or command —
-  humans review and merge. `issue-pr` and `spec-pr` open PRs but do not merge or close.
+- Never auto-merge PRs or auto-close issues from a skill or command — humans review and
+  merge. `issue-pr` submits PRs but does not merge or close them.
 - Never write the GitHub auth token or any secret into a skill body, command prompt, or
   script. `gh` reads its own config; do not handle credentials.
 - Never edit vendor directories or files under `node_modules/`.
@@ -584,8 +590,9 @@ skill has its required eval case file." That bar is non-negotiable for merge.
   unrelated issues are excluded.
 - [ ] `issue-build <n>` resolves the spec/plan/todo from issue `#<n>` (body links first,
   `[BUILD] <name>` fallback to `specs/<name>/`) and chains the `/build` flow.
-- [ ] `issue-pr <n>` raises a pull request whose body references issue `#<n>`; GitHub
-  links the PR to the issue. The issue is not auto-closed by this command.
+- [ ] `issue-pr <n>` submits every completed planned stack as draft PRs, applies and verifies
+  task-specific metadata, then marks them ready. Every layer links to issue `#<n>` and only
+  the designated final layer resolves it. The command does not merge or close the issue.
 - [ ] `spec-pr` reads `specs/<feature>/SPEC.md`, kebab-cases the text after `# Spec:` to
   derive `<name>`, and opens a PR titled `[SPEC] <name>` whose body references the
   spec/plan/todo files. The PR is labelled `spec` (creating the label if absent). The PR
@@ -626,10 +633,9 @@ skill has its required eval case file." That bar is non-negotiable for merge.
    label as well as by prefix.
 
 2. **Auto-close the issue when `/build` finishes?** — **Resolved:** No auto-close on build.
-   Instead, add `/issue-pr <n>` which raises a pull request whose body references the
-   issue (`Resolves #<n>` or `Implements #<n>`) so GitHub links the PR to the issue. The PR
-   body summarises the work done against the spec/plan/todo. Merging the PR is the human
-   action that closes the issue (if `Resolves`/`Closes` syntax is used).
+   `/issue-pr <n>` submits the planned implementation stacks. Intermediate layers use
+   `Part of #<n>` and the single designated final layer uses `Resolves #<n>`. Merging after
+   all required checkpoints is the human action that closes the issue.
 
 3. **Cross-repo `gh --repo` support?** — **Resolved:** v1 targets the current repo only.
    No `--repo` flag on `spec-pr`, `issue-create`, `issue-list`, `issue-build`, or
