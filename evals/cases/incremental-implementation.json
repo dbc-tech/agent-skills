@@ -52,6 +52,19 @@
         "The work is decomposed into independently useful vertical slices",
         "Verification is required before each slice is committed"
       ]
+    },
+    {
+      "id": 3,
+      "kind": "dialogue",
+      "prompt": "This feature has an approved SPEC.md and task plan. Task 1 blocks Task 2, while Task 3 is marked parallel-safe. Explain how you will structure the implementation branches before coding.",
+      "expected_output": "The agent checks gh stack, creates Task 1 and Task 2 as ordered layers, and starts Task 3 in a separate stack",
+      "expectations": [
+        "The official gh stack extension is checked before implementation and installed if only the extension is missing",
+        "Task 1 is initialized as a bottom layer and Task 2 is added above it",
+        "Task 3 starts a separate stack rather than being given a false dependency",
+        "One focused PR layer per task is the default",
+        "The agent does not propose gh pr create for stack members"
+      ]
     }
   ]
 }

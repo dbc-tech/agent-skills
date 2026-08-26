@@ -18,6 +18,19 @@ Build in thin vertical slices — implement one piece, test it, verify it, then 
 
 **When NOT to use:** Single-file, single-function changes where the scope is already minimal.
 
+## Spec-Driven Stack Setup
+
+When implementation is governed by a `SPEC.md` and a companion implementation plan or task list, use GitHub Stacked PRs. Small changes without a spec do not require an artificial stack.
+
+Before implementation:
+
+1. Read the governing spec, plan, and task list. Treat their task dependencies, phases, checkpoints, stack names, and PR-layer grouping as authoritative.
+2. Run `gh stack --version`. If the command is unavailable but `gh` exists, install the official extension with `gh extension install github/gh-stack`, then rerun the version check. If `gh` itself is unavailable or authentication/repository support fails, stop with the specific prerequisite error.
+3. For the bottom task in a stack, run `gh stack init <task-branch>` before changing code. For each dependent layer, commit the current task and then run `gh stack add <next-task-branch>` before starting the next task.
+4. Start parallel-safe tasks as separate stacks from their planned base instead of adding them above unrelated work.
+
+Use one focused PR layer per task by default. Combine tasks only when the approved plan says they must land together or neither can verify independently. If a task is too large for review, update the plan and split it into independently verifiable layers before continuing.
+
 ## The Increment Cycle
 
 ```
@@ -39,7 +52,7 @@ For each slice:
 2. **Test** — run the test suite (or write a test if none exists)
 3. **Verify** — confirm the slice works as expected (tests pass, build succeeds, manual check)
 4. **Commit** -- save your progress with a descriptive message (see `git-workflow-and-versioning` for atomic commit guidance)
-5. **Move to the next slice** — carry forward, don't restart
+5. **Move to the next slice** — for spec-governed work, create or check out the next planned stack layer before editing it; otherwise carry forward without restarting
 
 ## Slicing Strategies
 
@@ -140,6 +153,8 @@ Each increment changes one logical thing. Don't mix concerns:
 
 **Good:** Three separate commits — one for each change.
 
+For spec-governed work, the task boundary is also the default PR-layer boundary. Do not put the next task's commit on the current task branch and plan to separate it later.
+
 ### Rule 2: Keep It Compilable
 
 After each increment, the project must build and existing tests must pass. Don't leave the codebase in a broken state between slices.
@@ -208,6 +223,7 @@ After each increment, verify with the repository's own commands (see the test-dr
 - [ ] The new functionality works as expected
 - [ ] The change is committed with a descriptive message
 - [ ] **Mark the task complete in the todo file** — edit `- [ ]` to `- [x]` for the task just completed in `/specs/<feature>/tasks/todo.md` (or `tasks/todo.md` for legacy projects), update the plan's task status if the plan tracks status, and stage that file edit in the **same commit** as the code change. Never leave task-status updates for a separate "later" commit; every commit must be self-describing so the team can see which task it closed by looking at the diff.
+- [ ] For spec-governed work, the commit is on the task's planned `gh stack` layer and `gh stack view` shows the expected order
 
 **Note:** Run each verification command after a change that could affect it. After a successful run, don't repeat the same command unless the code has changed since — re-running on unchanged code adds no information.
 
@@ -221,6 +237,8 @@ After each increment, verify with the repository's own commands (see the test-dr
 | "I'll add the feature flag later" | If the feature isn't complete, it shouldn't be user-visible. Add the flag now. |
 | "This refactor is small enough to include" | Refactors mixed with features make both harder to review and debug. Separate them. |
 | "Let me run the build command again just to be sure" | After a successful run, repeating the same command adds nothing unless the code has changed since. Run it again after subsequent edits, not as reassurance. |
+| "We can split this into PRs at the end" | Retrofitting branch boundaries is avoidable rework. Create each planned stack layer before implementing its task. |
+| "Parallel tasks can share one stack" | A stack declares dependency. Parallel-safe tasks belong in separate stacks unless the plan records a real ordering constraint. |
 
 ## Red Flags
 
@@ -234,6 +252,9 @@ After each increment, verify with the repository's own commands (see the test-dr
 - Touching files outside the task scope "while I'm here"
 - Creating new utility files for one-time operations
 - Running the same build/test command twice in a row without any intervening code change
+- Implementing multiple planned tasks on one stack layer without approved grouping
+- Using `gh pr create` for a spec-governed stack member
+- Adding parallel-safe work above an unrelated stack layer
 
 ## Verification
 
@@ -244,6 +265,8 @@ After completing all increments for a task:
 - [ ] The build is clean
 - [ ] The feature works end-to-end as specified
 - [ ] No uncommitted changes remain
+- [ ] Each spec-governed task is on its planned stack layer
+- [ ] `gh stack view` matches the plan's dependency and phase order
 
 ## See Also
 

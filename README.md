@@ -49,7 +49,7 @@ Five commands that close the loop from a merged spec to a traceable GitHub Issue
 | Open a build-tracking issue | `/issue-create` | Link specs to implementation work |
 | List open build issues | `/issue-list` | See what's waiting to be built |
 | Build from an issue | `/issue-build <n>` | Chain `/build` onto a tracked spec |
-| Raise an implementation PR | `/issue-pr <n>` | Link the PR back to the issue |
+| Raise implementation PRs | `/issue-pr <n>` | Submit spec-driven stacks linked to the issue |
 
 **The issue-driven flow:**
 
@@ -60,7 +60,7 @@ Five commands that close the loop from a merged spec to a traceable GitHub Issue
                  ↓
          /issue-build <n>          → chains /build onto the spec
                  ↓
-         /issue-pr <n>             → opens PR linked to issue #<n>
+         /issue-pr <n>             → submits stacked PRs linked to issue #<n>
 ```
 
 Each artefact shares the same kebab-cased `<name>` (derived from the `# Spec:` heading), disambiguated by prefix: `[SPEC]` for spec PRs, `[BUILD]` for build issues.

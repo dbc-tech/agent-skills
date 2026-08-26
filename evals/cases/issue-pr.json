@@ -30,16 +30,18 @@
     {
       "id": 1,
       "kind": "dialogue",
-      "prompt": "The build for issue #42 is complete. Raise a PR linked to it.",
-      "expected_output": "A pull request with Resolves #42 in the body, title derived from the issue, opened against the default branch",
+      "prompt": "The spec-driven build for issue #42 is complete. Its approved plan has three task layers in one stack, with Task 3 designated as the closing layer. Submit it for review.",
+      "expected_output": "A three-layer GitHub Stack linked to issue #42, with task-specific metadata and only Task 3 resolving the issue",
       "expectations": [
-        "The PR body contains Resolves #42 at the top",
-        "The PR title is derived from the issue title and keeps the [BUILD] prefix",
-        "The PR is opened against the repo's default branch",
-        "The build label is applied to the PR",
-        "The skill does not merge the PR",
-        "The skill does not close the issue",
-        "The PR URL is reported back to the user"
+        "The issue's governing spec, plan, and task list are read before submission",
+        "The local stack order is validated against the approved Delivery Plan",
+        "The stack is submitted with gh stack submit --auto --open rather than gh pr create",
+        "Each PR title keeps the [BUILD] prefix and identifies its task",
+        "Each PR body includes its task, phase, dependencies, acceptance criteria, verification, and governing artifact paths",
+        "The first two layers use Part of #42 and only the designated third layer uses Resolves #42",
+        "The build label is applied to every PR",
+        "The skill does not merge any PR or close the issue directly",
+        "Every PR URL is reported in stack order"
       ]
     },
     {
@@ -51,6 +53,19 @@
         "The skill checks for gh on PATH before proceeding",
         "The skill reports the missing prerequisite clearly",
         "No PR is created"
+      ]
+    },
+    {
+      "id": 3,
+      "kind": "dialogue",
+      "prompt": "Issue #73 tracks a tiny unspecced config fix with no SPEC.md or implementation plan. Raise its implementation PR.",
+      "expected_output": "A standard single PR linked to issue #73 without manufacturing a stack",
+      "expectations": [
+        "The absence of both a governing spec and companion plan selects standalone mode",
+        "The PR body uses Resolves #73",
+        "The PR title keeps the [BUILD] prefix",
+        "The PR is created with gh pr create against the default branch",
+        "The skill does not create an artificial gh stack"
       ]
     }
   ]
