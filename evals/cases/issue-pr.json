@@ -35,11 +35,13 @@
       "expectations": [
         "The issue's governing spec, plan, and task list are read before submission",
         "The local stack order is validated against the approved Delivery Plan",
-        "The stack is submitted with gh stack submit --auto --open rather than gh pr create",
+        "The stack is submitted with gh stack submit --auto so new PRs remain drafts while metadata is applied",
         "Each PR title keeps the [BUILD] prefix and identifies its task",
         "Each PR body includes its task, phase, dependencies, acceptance criteria, verification, and governing artifact paths",
         "The first two layers use Part of #42 and only the designated third layer uses Resolves #42",
         "The build label is applied to every PR",
+        "Each PR's metadata is verified before gh pr ready marks it ready for review",
+        "Every PR in the multi-layer submission is verified to have non-null remote Stack membership with the planned base, size, and position",
         "The skill does not merge any PR or close the issue directly",
         "Every PR URL is reported in stack order"
       ]
@@ -64,8 +66,25 @@
         "The absence of both a governing spec and companion plan selects standalone mode",
         "The PR body uses Resolves #73",
         "The PR title keeps the [BUILD] prefix",
+        "The default branch is detected with gh repo view before PR creation",
         "The PR is created with gh pr create against the default branch",
-        "The skill does not create an artificial gh stack"
+        "The skill does not create an artificial gh stack",
+        "The skill uses title and body-file arguments rather than --web"
+      ]
+    },
+    {
+      "id": 4,
+      "kind": "dialogue",
+      "prompt": "Issue #88 has reached its first merge checkpoint. The auth stack is complete and already has ready PRs, but the integration stack must not be created until auth merges. Resubmit the ready work after updating its metadata.",
+      "expected_output": "Only the completed auth stack is resubmitted, with existing PRs moved to draft before metadata edits; the future integration stack remains unsubmitted",
+      "expectations": [
+        "Only completed stacks at the reached checkpoint are validated and submitted",
+        "The blocked future integration stack is not required to exist and is not submitted",
+        "The active local stack must equal the ready checkpoint prefix so gh stack submit cannot publish higher future branches",
+        "Repository Stack API support is probed before any existing PR is moved to draft",
+        "Existing ready PRs are moved back to draft before metadata is edited",
+        "All checkpoint PRs use Part of #88 because the full Delivery Plan is not complete",
+        "Metadata and remote Stack membership are verified before drafts are marked ready again"
       ]
     }
   ]

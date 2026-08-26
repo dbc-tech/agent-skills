@@ -85,14 +85,6 @@ Each task follows this structure, whether it lands in the markdown task list or 
 ```markdown
 ## Task [N]: [Short descriptive title]
 
-**Phase:** [Phase name or number]
-
-**Stack:** [Stack name, or "Standalone" only when the work is not spec-governed]
-
-**Branch:** [Task-specific branch name]
-
-**Layer:** [Position in stack]
-
 **Description:** One paragraph explaining what this task accomplishes.
 
 **Acceptance criteria:**
@@ -143,6 +135,9 @@ Work governed by a spec and companion implementation plan uses GitHub Stacked PR
 - Put sequential dependencies in one stack in dependency order.
 - Put parallel-safe tasks in separate stacks instead of inventing dependencies between them.
 - Use phases as stack boundaries or partial-merge boundaries, and make every phase checkpoint explicit.
+- Detect the repository default branch with `gh repo view --json defaultBranchRef --jq .defaultBranchRef.name` and use it as the common planning trunk unless the user explicitly approves another trunk.
+- Record one exact trunk for every stack. This is the branch passed to `gh stack init --base`.
+- If a stack depends on work from another stack, its start condition must require those checkpoints to merge into its trunk first. A stack cannot have two trunks.
 - Designate exactly one final layer to close the build issue after all required stacks and checkpoints are complete. Other layers reference the issue without closing it.
 
 Record the topology in the plan:
@@ -150,15 +145,17 @@ Record the topology in the plan:
 ```markdown
 ## Delivery Plan
 
-| Task | Phase | Stack | Branch | Layer | Depends on | Parallel-safe | Closes build issue |
-|---|---|---|---|---|---|---|---|
-| Task 1 | Foundation | auth | `feature/task-1-auth-model` | 1 (bottom) | None | No | No |
-| Task 2 | Foundation | auth | `feature/task-2-auth-api` | 2 | Task 1 | No | No |
-| Task 3 | UI | ui | `feature/task-3-auth-ui` | 1 (bottom) | Contract checkpoint | Yes | No |
-| Task 4 | Integration | integration | `feature/task-4-auth-integration` | 1 (bottom) | Tasks 2, 3 checkpoints | No | Yes |
+| Task | Phase | Stack | Trunk | Branch | Layer | Starts after | Depends on | Parallel-safe | Closes build issue |
+|---|---|---|---|---|---|---|---|---|---|
+| Task 1 | Foundation | auth | `main` | `feature/task-1-auth-model` | 1 (bottom) | Plan merged to `main` | None | No | No |
+| Task 2 | Foundation | auth | `main` | `feature/task-2-auth-api` | 2 | Task 1 committed | Task 1 | No | No |
+| Task 3 | Docs | docs | `main` | `feature/task-3-auth-docs` | 1 (bottom) | Plan merged to `main` | None | Yes | No |
+| Task 4 | Integration | integration | `main` | `feature/task-4-auth-integration` | 1 (bottom) | Auth and docs checkpoints merged to `main` | Tasks 2, 3 | No | Yes |
 ```
 
 If no build issue exists yet, `Closes build issue` still identifies the future closing layer; the issue number is supplied later by `issue-pr`.
+
+All stacks in one Delivery Plan should normally share the detected common trunk. If a user explicitly requires a different trunk for one stack, its start condition must also state how the approved spec and planning commits reach that trunk before implementation starts.
 
 ## Task Sizing Guidelines
 
@@ -234,10 +231,10 @@ When using an external tracker, note it in the plan document (e.g. "Tasks tracke
 
 ## Delivery Plan
 
-| Task | Phase | Stack | Branch | Layer | Depends on | Parallel-safe | Closes build issue |
-|---|---|---|---|---|---|---|---|
-| Task 1 | Foundation | [stack-name] | `[task-branch]` | 1 (bottom) | None | No | No |
-| Task N | Complete | [stack-name] | `[task-branch]` | N (top) | Task N-1 | No | Yes |
+| Task | Phase | Stack | Trunk | Branch | Layer | Starts after | Depends on | Parallel-safe | Closes build issue |
+|---|---|---|---|---|---|---|---|---|---|
+| Task 1 | Foundation | [stack-name] | `[trunk-branch]` | `[task-branch]` | 1 (bottom) | [start condition] | None | No | No |
+| Task N | Complete | [stack-name] | `[trunk-branch]` | `[task-branch]` | N (top) | Task N-1 committed | Task N-1 | No | Yes |
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
@@ -293,7 +290,7 @@ Before starting implementation, confirm:
 - [ ] Tasks are recorded in the task list target (default `tasks/todo.md`)
 - [ ] No task touches more than ~5 files
 - [ ] Checkpoints exist between major phases
-- [ ] Spec-governed tasks map to explicit stacks, branch names, and PR layers
+- [ ] Spec-governed tasks map to explicit stacks, trunks, branch names, start conditions, and PR layers
 - [ ] Parallel-safe tasks use separate stacks where appropriate
 - [ ] Exactly one final layer is designated to close the future build issue
 - [ ] The human has reviewed and approved the plan

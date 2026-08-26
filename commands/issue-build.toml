@@ -26,14 +26,9 @@ If neither method resolves a spec, stop and tell the user — the issue does not
 
 ## Step 3: Chain the /build flow
 
-With the resolved spec/plan/todo paths, follow the `/build` command flow:
+With the resolved artefact paths, execute the complete `/build auto` flow rather than an abbreviated local copy. This includes plan approval, the canonical Spec-Driven Stack Setup from incremental-implementation, exact branch checkout on resume, declared trunks and `gh stack init --base`, parent checkout before `gh stack add`, task-status commits, cross-stack merge checkpoints, verification, and blocker handling.
 
-1. Require a spec at `/specs/<feature>/SPEC.md` (or `/specs/**/SPEC.md`) — repo-root relative
-2. Establish a clean baseline (`git status --porcelain`)
-3. If no plan exists at `/specs/<feature>/tasks/plan.md`, invoke the planning-and-task-breakdown skill to generate one
-4. Execute tasks in dependency order (RED → GREEN → regression → build → commit). Each commit must include the task-status update: edit the task's `- [ ]` checkbox to `- [x]` in `/specs/<feature>/tasks/todo.md`, stage that file alongside the code, and commit them together
-5. Stop and ask the user when a test fails, the build breaks, the spec is ambiguous, or a task is high-risk
-6. Summarize at the end: tasks completed, tests added, commits made
+If the plan is missing, generate and land it as `/build auto` requires before implementation. If a checkpoint is reached, report the completed stacks for `/issue-pr` and resume only after their prerequisites are merged into the next stack's declared trunk.
 
-This command delegates to `incremental-implementation` and `test-driven-development` skills — it has no skill of its own.
+This command delegates to the `/build` workflow plus `incremental-implementation` and `test-driven-development`; it has no independent build loop of its own.
 """

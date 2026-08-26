@@ -37,11 +37,11 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 | Simplify the code | `/code-simplify` | Clarity over cleverness |
 | Ship to production | `/ship` | Faster is safer |
 
-Want fewer manual steps once the spec exists? **`/build auto`** generates the plan and implements every task in a single approved pass — you approve the plan once, then it runs autonomously. It removes the human stepping *between* tasks, not the verification: every task is still test-driven and committed individually, and it pauses on failures or risky steps.
+Want fewer manual steps once the spec exists? **`/build auto`** runs approved, currently unblocked tasks autonomously. It removes routine human stepping *between* tasks, not verification or dependency gates: every task is still test-driven and committed individually, and it pauses on failures, risky steps, or cross-stack merge checkpoints.
 
 ### Issue-driven build commands
 
-Five commands that close the loop from a merged spec to a traceable GitHub Issue and linked pull request. Requires the [`gh` CLI](https://cli.github.com/).
+Five commands that close the loop from a merged spec to a traceable GitHub Issue and linked pull requests. Requires the [`gh` CLI](https://cli.github.com/). Spec-governed implementation also requires repository support for GitHub Stacked PRs and the official `github/gh-stack` extension (`gh extension install github/gh-stack`); skills stop and ask before installing it.
 
 | What you're doing | Command | Key principle |
 |-------------------|---------|---------------|

@@ -180,7 +180,7 @@ With the validated spec, generate a technical implementation plan:
 >
 > **Output convention:** Save the plan to `/specs/<feature>/tasks/plan.md` and record the task list in the task list target defined by `planning-and-task-breakdown` (default `/specs/<feature>/tasks/todo.md`; projects may designate an external tracker instead), where `<feature>` matches the spec's directory name. Create `/specs/<feature>/tasks/` if it does not exist. If the spec is at the repo root (legacy), fall back to `tasks/plan.md` and `tasks/todo.md`. Downstream commands (`/build`, etc.) expect these defaults.
 
-Because this workflow is governed by a spec and companion plan, implementation uses GitHub Stacked PRs. The plan must include a Delivery Plan that records each task's phase, stack, exact branch name, layer order, dependencies, parallel-safety, checkpoints, and the single final layer that will close the build issue. Small changes outside this spec workflow do not require an artificial stack.
+Because this workflow is governed by a spec and companion plan, implementation uses GitHub Stacked PRs. The plan must include a Delivery Plan that records each task's phase, stack, trunk, exact branch name, start condition, layer order, dependencies, parallel-safety, checkpoints, and the single final layer that will close the build issue. Small changes outside this spec workflow do not require an artificial stack.
 
 The plan should be reviewable: the human should be able to read it and say "yes, that's the right approach" or "no, change X."
 
@@ -210,9 +210,7 @@ Break the plan into discrete, implementable tasks:
 
 Execute tasks one at a time following `skills/incremental-implementation/SKILL.md` (`incremental-implementation`) and `skills/test-driven-development/SKILL.md` (`test-driven-development`). Use `skills/context-engineering/SKILL.md` (`context-engineering`) to load the right spec sections and source files at each step rather than flooding the agent with the entire spec.
 
-Before implementation, run `gh stack --version`. If `gh` is available but the official extension is not, install it with `gh extension install github/gh-stack`. Initialize the bottom task with `gh stack init <task-branch>`, add sequentially dependent tasks with `gh stack add <task-branch>`, and start parallel-safe work in separate stacks as recorded in the plan. Do not use `gh pr create` for stack members.
-
-Keep stacks current with `gh stack rebase` or `gh stack sync`, and submit them through `issue-pr` with `gh stack submit`. A human may merge with `gh stack merge` only after the applicable phase checkpoint and every included task's acceptance criteria, checks, and review requirements pass.
+`incremental-implementation` is the canonical source for stack setup, resume, trunk, and checkpoint mechanics. Submit completed layers through `issue-pr`. Do not duplicate or improvise those commands here.
 
 ## Keeping the Spec Alive
 
@@ -261,7 +259,7 @@ Before proceeding to implementation, confirm:
 - [ ] The spec is saved to `/specs/<feature>/SPEC.md` (or `SPEC.md` at the repo root for legacy projects)
 - [ ] If the request bundles several independently testable capabilities, a capability map (module ids, dependency direction, build order) was approved before any module spec was written
 - [ ] Every module spec traces to a module id in the approved map
-- [ ] The implementation plan maps every task to a phase, stack, exact branch name, and PR layer
+- [ ] The implementation plan maps every task to a phase, stack, trunk, exact branch name, start condition, and PR layer
 - [ ] Sequential dependencies and parallel-safe tasks are represented accurately in the stack topology
 - [ ] Exactly one final layer is designated to close the build issue
 - [ ] The implementation workflow uses `gh stack` for creation, submission, synchronization, and merge guidance
