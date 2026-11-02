@@ -21,6 +21,15 @@ Write a failing test before writing the code that makes it pass. For bug fixes, 
 
 **Related:** For browser-based changes, combine TDD with runtime verification using Chrome DevTools MCP — see the Browser Testing section below.
 
+## dbc.johnny5: Johnny5 Cloudflare Workers
+
+If the code under test is a Worker under `cloudflare/johnny5-*`,
+`webhooks/subscriptions/*-event-handlers`, or `outbound-connectors/` in the
+`dbc.johnny5` repository, read `specs/leaf-services/08-testing.md` for the
+required test shapes (route/auth, health, consumer/DLQ, SDK) before writing
+the first test — that file, not this one, decides what "covered" means for
+these Workers.
+
 ## Discover the Stack First
 
 The TDD cycle is universal; the commands are not. Before writing the first test, discover how *this* repository tests, and use its commands for every RED, GREEN, and verification step:

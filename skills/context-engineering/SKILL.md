@@ -17,6 +17,15 @@ Feed agents the right information at the right time. Context is the single bigge
 - Setting up a new project for AI-assisted development
 - The agent is not following project conventions
 
+## dbc.johnny5: Johnny5 Cloudflare Workers
+
+When curating context for a Worker under `cloudflare/johnny5-*`,
+`webhooks/subscriptions/*-event-handlers`, or `outbound-connectors/` in the
+`dbc.johnny5` repository, the project has already done this curation:
+`specs/leaf-services/README.md`'s Reading order and `REFERENCE_MAP.md` are
+the project's own context-loading map for these Workers. Load only the
+topic file the current task needs from there, not the whole bundle.
+
 ## The Context Hierarchy
 
 Structure context from most persistent to most transient:
