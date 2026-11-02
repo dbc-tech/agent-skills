@@ -39,6 +39,15 @@ Apply the skill when:
 
 If you doubt every keystroke, you ship nothing. The skill applies only to non-trivial decisions as defined above.
 
+## dbc.johnny5: Johnny5 Cloudflare Workers
+
+For a decision on a Worker under `cloudflare/johnny5-*`,
+`webhooks/subscriptions/*-event-handlers`, or `outbound-connectors/` in the
+`dbc.johnny5` repository, `specs/leaf-services/10-boundaries.md` and
+`CONFORMANCE_CHECKLIST.md` are the adversarial check already written for
+these Workers — walk the relevant checklist section as part of the review
+rather than reasoning from first principles alone.
+
 ## Loading Constraints
 
 This skill is designed for the **main-session orchestrator**, where Step 3 (DOUBT, detailed below) can spawn a fresh-context reviewer.

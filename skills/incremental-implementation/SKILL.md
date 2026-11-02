@@ -18,6 +18,18 @@ Build in thin vertical slices — implement one piece, test it, verify it, then 
 
 **When NOT to use:** Single-file, single-function changes where the scope is already minimal.
 
+## dbc.johnny5: Johnny5 Cloudflare Workers
+
+If the work is a Worker under `cloudflare/johnny5-*`,
+`webhooks/subscriptions/*-event-handlers`, or `outbound-connectors/` in the
+`dbc.johnny5` repository, load the topic file for the current task from
+`specs/leaf-services/` before implementing it (auth → `04-auth.md`, events
+→ `07-events-and-resiliency.md`, data → `05-data-and-context.md`, and so
+on — `REFERENCE_MAP.md` indexes the rest) rather than inferring the
+pattern. When a task's commit lands, add a Jira comment per
+`09-deploy-and-ci.md#jira-and-github-issue-tracking` — commit SHA, task closed — and
+likewise when a PR in a stacked series opens, rebases, or merges.
+
 ## The Increment Cycle
 
 ```

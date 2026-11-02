@@ -24,6 +24,15 @@ Every framework-specific code decision must be backed by official documentation.
 - Pure logic that works the same across all versions (loops, conditionals, data structures)
 - The user explicitly wants speed over verification ("just do it quickly")
 
+## dbc.johnny5: Johnny5 Cloudflare Workers
+
+For a Worker under `cloudflare/johnny5-*`,
+`webhooks/subscriptions/*-event-handlers`, or `outbound-connectors/` in the
+`dbc.johnny5` repository, `specs/leaf-services/` is itself the authoritative
+source — read the relevant topic file instead of inferring the pattern from
+an existing Worker, especially one `DECISIONS.md` lists as a known gap
+against the bundle.
+
 ## The Process
 
 ```

@@ -19,6 +19,18 @@ Decompose work into small, verifiable tasks with explicit acceptance criteria. G
 
 **When NOT to use:** Single-file changes with obvious scope, or when the spec already contains well-defined tasks.
 
+## dbc.johnny5: Johnny5 Cloudflare Workers
+
+If the spec is for a Worker under `cloudflare/johnny5-*`,
+`webhooks/subscriptions/*-event-handlers`, or `outbound-connectors/` in the
+`dbc.johnny5` repository, read `specs/leaf-services/01-stack-and-layout.md`,
+`09-deploy-and-ci.md`, and `REFERENCE_MAP.md` in that checkout before
+breaking the spec into tasks — they are the authoritative stack, layout and
+reference-implementation map for that repo, read live rather than
+summarized. Find or create the work's Jira ticket and GitHub issue per
+`09-deploy-and-ci.md#jira-and-github-issue-tracking` before the first task starts, and name
+the branch per `02-naming.md`.
+
 ## The Planning Process
 
 ### Step 1: Enter Plan Mode

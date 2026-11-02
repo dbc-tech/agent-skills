@@ -17,6 +17,14 @@ Design stable, well-documented interfaces that are hard to misuse. Good interfac
 - Establishing database schema that informs API shape
 - Changing existing public interfaces
 
+## dbc.johnny5: Johnny5 Cloudflare Workers
+
+For a Worker under `cloudflare/johnny5-*` or `outbound-connectors/` in the
+`dbc.johnny5` repository, `specs/leaf-services/03-http-and-code-style.md`
+and `06-sdk.md` define this repo's API and SDK contract shape — the
+route-and-schema-and-SDK co-location pattern — and take precedence over a
+generic REST convention for those services.
+
 ## Core Principles
 
 ### Hyrum's Law
